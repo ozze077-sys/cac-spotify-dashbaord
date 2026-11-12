@@ -122,13 +122,16 @@ PAGES = {
                   "scen"),
     "sensitivity": ("Sensitivity Analysis", "Sensitivity Analysis", "See how results change when two assumptions change at once.",
                     [("grid", "What-if table")], "scen"),
+    "montecarlo": ("Monte Carlo", "Monte Carlo Simulation",
+                   "Thousands of simulated futures with uncertain churn, price, margin and marketing, instead of one guess.",
+                   [("sim", "Simulation"), ("method", "How it works")], "scen"),
     "assumptions": ("Model Assumptions", "Model Assumptions", "Every assumption in one place: change it here, see what it means, and follow the step-by-step maths.",
                     [("set", "Set assumptions"), ("how", "How results are calculated"), ("fixed", "Fixed data choices")], "fx"),
     "data": ("Data & Methodology", "Data & Methodology", "The source numbers, data checks, formulas and plain-English definitions.",
              [("glossary", "Glossary"), ("reported", "Reported data"), ("validation", "Data checks"), ("method", "Formulas")],
              "annual"),
 }
-REPORT_PAGES = ["revenue", "subscribers", "arpu", "profitability", "cac", "ltv", "retention", "sensitivity"]
+REPORT_PAGES = ["revenue", "subscribers", "arpu", "profitability", "cac", "ltv", "retention", "sensitivity", "montecarlo"]
 NAV_ORDER = ["dashboard", *REPORT_PAGES, "assumptions", "data"]
 
 # ----------------------------------------------------------------------------- styles
@@ -919,6 +922,15 @@ def guide(page, sub, f):
         return (f"If {f['churn']:.1f}% cancel each month, about {(1 - c) ** 12 * 100:.0f}% of new subscribers are still "
                 "paying after a year.",
                 "Each row follows 1,000 new subscribers. Read left to right: greener cells = more people still paying.")
+    if page == "montecarlo":
+        if sub == "method":
+            return ("Monte Carlo means running the same calculation thousands of times with randomly drawn inputs.",
+                    "Each run picks a churn rate, price, margin, marketing spend and growth from the ranges you set, "
+                    "then works out LTV, CAC and payback. The spread of results shows how sure we can be.")
+        return ("Instead of betting on one churn rate, this runs thousands of possible futures and counts how often "
+                "Spotify's subscribers are still worth more than 3x what they cost to win.",
+                "Set how uncertain each input is on the left. The chart shows every simulated LTV:CAC; the dark line "
+                "is the 3x 'healthy' mark. Bars to the right of it are good outcomes.")
     if page == "sensitivity":
         return ("Use this table to answer 'what if?' questions, e.g. what if fewer people cancel AND margins improve?",
                 "Pick what to measure and what to compare in the dropdowns. Find your row (cancellation rate) and "
@@ -1222,6 +1234,177 @@ def highlight_year(node, year):
     if children is not None and not isinstance(children, str):
         highlight_year(children, year)
 
+# ----------------------------------------------------------------------------- Monte Carlo simulation
+
+MC_DEFAULTS = {"churn": [2, 5], "arpu": 10, "gm": 2, "sm": 20, "na": 25, "runs": 10000}
+MC_SEED = 42  # fixed seed: the same settings always give the same answer
+
+
+def mc_control(title, control, help_text):
+    control.persistence, control.persistence_type = True, "memory"  # keep settings when the page re-renders
+    return html.Div([
+        html.Div(title, style={"fontSize": "14px", "fontWeight": 700, "color": BLACK}),
+        html.Div(help_text, style={**NOTE, "margin": "2px 0 4px"}),
+        html.Div(control, style={"margin": "0 -14px"}),
+    ], style={"marginBottom": "18px"})
+
+
+def mc_simulate(f, churn_range, arpu_pct, gm_pp, sm_pct, na_pct, runs):
+    """Vectorised Monte Carlo of the subscriber unit economics.
+
+    Every input is drawn from a triangular distribution: the base-year value (or the middle of the churn range)
+    is the most likely, the edges of the range are the least likely."""
+    rng = np.random.default_rng(MC_SEED)
+    base = usd_base(int(f["base_year"]))
+    lo, hi = sorted(churn_range)
+    hi = hi if hi > lo else lo + 0.01
+    churn = rng.triangular(lo, (lo + hi) / 2, hi, runs) / 100
+
+    def spread(width):
+        return rng.triangular(-width, 0, width, runs) if width > 0 else np.zeros(runs)
+
+    arpu = base["arpu"] * (1 + spread(arpu_pct / 100))
+    gm = base["gross_margin"] + spread(gm_pp / 100)
+    sm = base["sm_expense"] * (1 + spread(sm_pct / 100))
+    net_adds = base["net_adds"] * (1 + spread(na_pct / 100))
+    avg_subs = base["avg_subs"] - base["net_adds"] / 2 + net_adds / 2
+
+    monthly_gp = arpu * gm
+    ltv = monthly_gp / churn
+    cac = sm / (net_adds + avg_subs * churn * 12) if f["proxy"] == "gross_adds" else sm / net_adds
+    return pd.DataFrame({"Monthly churn %": churn * 100, "ARPU $": arpu, "Gross margin %": gm * 100,
+                         "S&M $M": sm, "Net adds M": net_adds,
+                         "ltv": ltv, "cac": cac, "ratio": ltv / cac, "payback": cac / monthly_gp})
+
+
+def mc_results(f, churn_range, arpu_pct, gm_pp, sm_pct, na_pct, runs):
+    sim = mc_simulate(f, churn_range, arpu_pct, gm_pp, sm_pct, na_pct, int(runs))
+    ratio = sim["ratio"]
+    p_ok = (ratio >= 3).mean() * 100
+    p10, p50, p90 = np.percentile(ratio, [10, 50, 90])
+    payback_ok = (sim["payback"] < 1 / (sim["Monthly churn %"] / 100)).mean() * 100
+
+    cards = kpi_row(
+        card("Chance LTV:CAC ≥ 3x", f"{p_ok:.0f}%", "healthy in most futures" if p_ok >= 70 else
+             "risky: often below 3x", p_ok >= 70),
+        card("Typical LTV:CAC (P50)", f"{p50:.1f}x", f"range {p10:.1f}x – {p90:.1f}x (P10–P90)"),
+        card("Typical LTV (P50)", f"${sim['ltv'].median():,.2f}", "profit per subscriber"),
+        card("Typical CAC (P50)", f"${sim['cac'].median():,.2f}", "realistic proxy" if f["proxy"] == "gross_adds"
+             else "simple proxy"),
+        card("Cost earned back in time", f"{payback_ok:.0f}%", "of simulations: payback < average stay",
+             payback_ok >= 70),
+    )
+    cards.style = {**cards.style, "gridTemplateColumns": "repeat(auto-fit, minmax(128px, 1fr))", "gap": "12px"}
+
+    # Histogram of LTV:CAC, binned with numpy so the chart carries 60 bars rather than every simulated value.
+    # Bins below 3x are grey, 3x and above use the accent colour.
+    top = float(np.percentile(ratio, 99.5))
+    counts, edges = np.histogram(ratio.clip(upper=top), bins=60, range=(0, top))
+    mids = (edges[:-1] + edges[1:]) / 2
+    hist = go.Figure()
+    for mask, color, label in ((mids < 3, GREY, "Below 3x"), (mids >= 3, GREEN, "3x or better")):
+        hist.add_trace(go.Bar(x=mids[mask], y=counts[mask], width=(edges[1] - edges[0]) * 0.92, marker_color=color,
+                              name=label, customdata=np.c_[edges[:-1][mask], edges[1:][mask]],
+                              hovertemplate="LTV:CAC %{customdata[0]:.2f}x – %{customdata[1]:.2f}x"
+                                            "<br>%{y:,} simulations<extra></extra>"))
+    style(hist, f"LTV:CAC across {int(runs):,} simulated futures", "Number of simulations", height=400)
+    hist.update_layout(barmode="overlay", hovermode="closest",
+                       legend=dict(orientation="h", yanchor="top", y=-0.18, xanchor="left", x=0), margin=dict(b=80))
+    hist.update_xaxes(type="linear", title="LTV:CAC (x)", range=[0, top], ticksuffix="x")
+    hist.add_vline(x=3, line_width=2, line_color=BLACK, annotation_text="3x healthy", annotation_position="top left")
+    for v, lab in ((p10, "P10"), (p50, "P50"), (p90, "P90")):
+        hist.add_vline(x=v, line_width=1, line_dash="dot", line_color=INK_2, annotation_text=lab,
+                       annotation_position="top right", annotation_font_size=11)
+
+    # Which uncertain input moves LTV:CAC most (rank correlation, -1 to 1).
+    inputs = ["Monthly churn %", "ARPU $", "Gross margin %", "S&M $M", "Net adds M"]
+    ranks = sim[inputs + ["ratio"]].rank()
+    with np.errstate(invalid="ignore", divide="ignore"):  # an input with zero uncertainty has no correlation
+        corr = ranks[inputs].corrwith(ranks["ratio"]).fillna(0).sort_values(key=abs)
+    drivers = go.Figure(go.Bar(x=corr.values, y=corr.index, orientation="h",
+                               marker_color=[GREEN if v >= 0 else BLACK for v in corr.values],
+                               text=[f"{v:+.2f}" for v in corr.values], textposition="outside", cliponaxis=False,
+                               hovertemplate="%{y}: %{x:+.2f}<extra></extra>"))
+    style(drivers, "What drives the risk most?", height=400, legend=False)
+    drivers.update_layout(hovermode="closest")
+    drivers.update_xaxes(type="linear", range=[-1.15, 1.15], title="Effect on LTV:CAC (rank correlation)",
+                         zeroline=True, zerolinecolor=INK_2)
+    drivers.update_yaxes(type="category", showgrid=False)
+
+    pct = pd.DataFrame({
+        "Metric": ["LTV:CAC (x)", "LTV ($)", "CAC ($)", "Payback (months)"],
+        "P10 (pessimistic)": [p10, *np.percentile(sim["ltv"], [10]), *np.percentile(sim["cac"], [90]),
+                              *np.percentile(sim["payback"], [90])],
+        "P50 (typical)": [p50, sim["ltv"].median(), sim["cac"].median(), sim["payback"].median()],
+        "P90 (optimistic)": [p90, *np.percentile(sim["ltv"], [90]), *np.percentile(sim["cac"], [10]),
+                             *np.percentile(sim["payback"], [10])],
+        "Mean": [ratio.mean(), sim["ltv"].mean(), sim["cac"].mean(), sim["payback"].mean()],
+    }).set_index("Metric")
+    return [
+        cards,
+        row(graph(hist, "Each bar counts how many simulated futures landed on that LTV:CAC. Dotted lines mark the "
+                        "pessimistic (P10), typical (P50) and optimistic (P90) results."),
+            graph(drivers, "Longer bar = that input matters more. Positive means a higher input raises LTV:CAC; "
+                           "negative means it lowers it.")),
+        row(panel("Pessimistic / typical / optimistic results", table(pct)),
+            callout("info", "How to read P10 / P50 / P90.", "P10 is a bad-case result: only 10% of simulations were "
+                    "worse. P50 is the middle result. P90 is a good case: only 10% did better. For CAC and payback, "
+                    "lower is better, so their pessimistic column shows the high values.")),
+    ]
+
+
+def view_montecarlo(sub, f):
+    if sub == "method":
+        steps = pd.DataFrame({
+            "Step": ["1. Draw inputs", "2. Calculate", "3. Repeat", "4. Summarise"],
+            "What happens": [
+                "Pick a random monthly churn, ARPU, gross margin, S&M spend and net adds from the ranges you set. "
+                "Values near the base year (or the middle of the churn range) are most likely (triangular distribution).",
+                "LTV = ARPU × gross margin ÷ churn. CAC = S&M ÷ subscribers won. Payback = CAC ÷ monthly gross profit.",
+                "Do this thousands of times (you choose how many). A fixed random seed means the same settings "
+                "always give the same answer.",
+                "Count how often LTV:CAC is 3x or better, and report the P10 / P50 / P90 of every metric."],
+        }).set_index("Step")
+        base = usd_base(int(f["base_year"]))
+        start = pd.DataFrame({
+            "Input": ["Monthly ARPU", "Gross margin", "S&M spend", "Premium net adds", "Average subscribers"],
+            f"Base year {f['base_year']}": [f"${base['arpu']:.2f}", f"{base['gross_margin'] * 100:.1f}%",
+                                            f"${base['sm_expense']:,.0f}M", f"{base['net_adds']:.1f}M",
+                                            f"{base['avg_subs']:.1f}M"],
+        }).set_index("Input")
+        return [row(panel("How the simulation works", table(steps))),
+                row(panel("Starting values (change the base year on the Model Assumptions page)", table(start)),
+                    callout("warn", "Still a model.", DISCLAIMER + " The simulation shows how uncertain the answer "
+                            "is; it does not make the inputs more accurate."))]
+
+    controls = html.Div([
+        html.Div("Uncertainty ranges", style={"fontSize": "16px", "fontWeight": 700, "color": BLACK, "marginBottom": "14px"}),
+        mc_control("Monthly churn range", dcc.RangeSlider(
+            id="mc-churn", min=1, max=8, step=0.25, value=MC_DEFAULTS["churn"], marks={m: f"{m}%" for m in (1, 2, 4, 6, 8)},
+            tooltip={"placement": "bottom"}), "Spotify does not publish churn, so it is drawn between these two values."),
+        mc_control("ARPU uncertainty (±%)", slider("mc-arpu", 0, 30, 1, MC_DEFAULTS["arpu"], [0, 10, 20, 30], "%"),
+                   "How far price per subscriber could move from the base year."),
+        mc_control("Gross margin uncertainty (± points)", slider("mc-gm", 0, 5, 0.5, MC_DEFAULTS["gm"], [0, 1, 2, 3, 4, 5], "pp"),
+                   "Royalty and delivery costs could shift the margin."),
+        mc_control("Marketing spend uncertainty (±%)", slider("mc-sm", 0, 50, 5, MC_DEFAULTS["sm"], [0, 25, 50], "%"),
+                   "Sales & marketing spend drives CAC."),
+        mc_control("Net adds uncertainty (±%)", slider("mc-na", 0, 50, 5, MC_DEFAULTS["na"], [0, 25, 50], "%"),
+                   "How many more subscribers Spotify wins in a year."),
+        html.Div([
+            html.Div("Number of simulations", style={"fontSize": "14px", "fontWeight": 700, "color": BLACK,
+                                                     "marginBottom": "6px"}),
+            dcc.Dropdown(id="mc-runs", value=MC_DEFAULTS["runs"], clearable=False, searchable=False,
+                         options=[{"label": f"{n:,}", "value": n} for n in (1000, 5000, 10000, 25000, 50000)],
+                         persistence=True, persistence_type="memory"),
+        ]),
+        html.Div(f"Uses base year {f['base_year']} and the "
+                 f"{'realistic' if f['proxy'] == 'gross_adds' else 'simple'} CAC proxy from Model Assumptions.",
+                 style={**NOTE, "marginTop": "14px"}),
+    ], style={**CARD, "padding": "20px 22px", "flex": "0 0 330px", "alignSelf": "flex-start", "boxSizing": "border-box"})
+    out = dcc.Loading(html.Div(id="mc-out"), type="dot", color=GREEN)
+    return [html.Div([controls, html.Div(out, style={"flex": "1 1 600px", "minWidth": 0})],
+                     style={"display": "flex", "gap": "18px", "flexWrap": "wrap", "alignItems": "flex-start"})]
+
 
 def render_view(page, sub, f):
     if page == "assumptions":
@@ -1244,6 +1427,8 @@ def render_view(page, sub, f):
         return view_retention(sub)
     if page == "sensitivity":
         return view_sensitivity()
+    if page == "montecarlo":
+        return view_montecarlo(sub, f)
     return view_data(sub, chosen_year(f))
 
 # ----------------------------------------------------------------------------- heat-table builders
@@ -1330,6 +1515,9 @@ ICON_PATHS = {
     "ltv": '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2'
            'A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>',
     "retention": '<path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/>',
+    "montecarlo": '<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.2"/>'
+                  '<circle cx="15.5" cy="15.5" r="1.2"/><circle cx="15.5" cy="8.5" r="1.2"/><circle cx="8.5" cy="15.5" r="1.2"/>'
+                  '<circle cx="12" cy="12" r="1.2"/>',
     "sensitivity": '<line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/>'
                    '<line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/>'
                    '<line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/>',
@@ -1578,6 +1766,12 @@ def sync_assumptions(values, _resets, store):
 @app.callback(Output("sidebar", "style"), Input("burger", "n_clicks"))
 def toggle_sidebar(n):
     return {**SIDEBAR, "display": "none"} if n and n % 2 else SIDEBAR
+
+
+@app.callback(Output("mc-out", "children"), Input("mc-churn", "value"), Input("mc-arpu", "value"),
+              Input("mc-gm", "value"), Input("mc-sm", "value"), Input("mc-na", "value"), Input("mc-runs", "value"), ASSUMP)
+def update_montecarlo(churn_range, arpu_pct, gm_pp, sm_pct, na_pct, runs, f):
+    return mc_results(f, churn_range, arpu_pct, gm_pp, sm_pct, na_pct, runs)
 
 
 @app.callback(Output("download", "data"), Input("dl-btn", "n_clicks"), State("page", "data"), prevent_initial_call=True)
