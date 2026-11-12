@@ -1,0 +1,19 @@
+field,definition,period_basis,data_status
+year,Calendar year,Year-end / annual,Actual reported
+mau_millions,"Monthly active users, millions",Year-end,Actual reported
+premium_subscribers_millions,"Premium subscribers, millions",Year-end,Actual reported
+ad_supported_mau_millions,"Ad-supported MAUs, millions",Year-end,Actual reported
+premium_revenue_eur_millions,"Premium subscription revenue, EUR millions",Annual / quarter,Actual reported
+ad_supported_revenue_eur_millions,"Ad-supported revenue, EUR millions",Annual / quarter,Actual reported
+total_revenue_eur_millions,"Total revenue, EUR millions",Annual / quarter,Actual reported
+gross_profit_eur_millions,"Gross profit, EUR millions",Annual / quarter,Actual reported
+gross_margin_pct,Gross margin percentage,Annual / quarter,Actual reported
+total_operating_expenses_eur_millions,"Total operating expenses, EUR millions",Annual / quarter,Actual reported
+operating_income_eur_millions,"Operating income, EUR millions",Annual / quarter,Actual reported
+operating_margin_pct,Operating margin percentage,Annual / quarter,Actual reported
+operating_cash_flow_eur_millions,"Net cash from operating activities, EUR millions",Annual / quarter,Actual reported
+free_cash_flow_eur_millions,"Free cash flow, EUR millions; non-IFRS company-defined measure",Annual / quarter,Actual reported
+sales_marketing_expense_eur_millions,"Sales and marketing expense, EUR millions",Annual,Actual reported; only 2023-2025 included here
+premium_subscriber_net_adds_millions,Change in year-end premium subscribers vs prior year,Annual,Calculated from reported subscriber counts
+premium_revenue_per_avg_subscriber_per_month_eur_approx,Premium revenue divided by average opening/closing year-end subscribers and 12,Annual,"Analyst calculation / approximation, not Spotify-reported ARPU"
+sales_marketing_per_net_added_premium_subscriber_eur_proxy,Sales & marketing expense divided by net subscriber additions,Annual,"Analyst proxy, NOT CAC"

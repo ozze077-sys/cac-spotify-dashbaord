@@ -1,0 +1,80 @@
+check,period,expected,actual,difference,result
+Premium + ad-supported revenue = total revenue,2021,9668.0,9668.0,0.0,PASS
+Gross profit / revenue = reported gross margin %,2021,26.8,26.8,-0.0,PASS
+Gross profit - operating expenses = operating income,2021,94.0,94.0,0.0,PASS
+Operating income / revenue = reported operating margin %,2021,1.0,0.972,-0.028,PASS
+Free cash flow <= operating cash flow,2021,0.0,0.0,0.0,PASS
+Premium + ad-supported revenue = total revenue,2022,11727.0,11727.0,0.0,PASS
+Gross profit / revenue = reported gross margin %,2022,25.0,24.951,-0.049,PASS
+Gross profit - operating expenses = operating income,2022,-659.0,-659.0,0.0,PASS
+Operating income / revenue = reported operating margin %,2022,-5.6,-5.62,-0.02,PASS
+Free cash flow <= operating cash flow,2022,0.0,0.0,0.0,PASS
+Premium + ad-supported revenue = total revenue,2023,13247.0,13247.0,0.0,PASS
+Gross profit / revenue = reported gross margin %,2023,25.6,25.644,0.044,PASS
+Gross profit - operating expenses = operating income,2023,-446.0,-446.0,0.0,PASS
+Operating income / revenue = reported operating margin %,2023,-3.4,-3.367,0.033,PASS
+Free cash flow <= operating cash flow,2023,0.0,0.0,0.0,PASS
+Premium + ad-supported revenue = total revenue,2024,15673.0,15673.0,0.0,PASS
+Gross profit / revenue = reported gross margin %,2024,30.1,30.141,0.041,PASS
+Gross profit - operating expenses = operating income,2024,1365.0,1365.0,0.0,PASS
+Operating income / revenue = reported operating margin %,2024,8.7,8.709,0.009,PASS
+Free cash flow <= operating cash flow,2024,0.0,0.0,0.0,PASS
+Premium + ad-supported revenue = total revenue,2025,17186.0,17186.0,0.0,PASS
+Gross profit / revenue = reported gross margin %,2025,32.0,31.98,-0.02,PASS
+Gross profit - operating expenses = operating income,2025,2198.0,2198.0,0.0,PASS
+Operating income / revenue = reported operating margin %,2025,12.8,12.789,-0.011,PASS
+Free cash flow <= operating cash flow,2025,0.0,0.0,0.0,PASS
+Premium + ad-supported revenue = total revenue,2024-Q4,4242.0,4242.0,0.0,PASS
+Gross profit / revenue = reported gross margin %,2024-Q4,32.2,32.249,0.049,PASS
+Gross profit - operating expenses = operating income,2024-Q4,477.0,477.0,0.0,PASS
+Operating income / revenue = reported operating margin %,2024-Q4,11.2,11.245,0.045,PASS
+Free cash flow <= operating cash flow,2024-Q4,0.0,0.0,0.0,PASS
+Premium + ad-supported revenue = total revenue,2025-Q1,4190.0,4190.0,0.0,PASS
+Gross profit / revenue = reported gross margin %,2025-Q1,31.6,31.647,0.047,PASS
+Gross profit - operating expenses = operating income,2025-Q1,509.0,509.0,0.0,PASS
+Operating income / revenue = reported operating margin %,2025-Q1,12.1,12.148,0.048,PASS
+Free cash flow <= operating cash flow,2025-Q1,0.0,0.0,0.0,PASS
+Premium + ad-supported revenue = total revenue,2025-Q2,4193.0,4193.0,0.0,PASS
+Gross profit / revenue = reported gross margin %,2025-Q2,31.5,31.481,-0.019,PASS
+Gross profit - operating expenses = operating income,2025-Q2,406.0,406.0,0.0,PASS
+Operating income / revenue = reported operating margin %,2025-Q2,9.7,9.683,-0.017,PASS
+Free cash flow <= operating cash flow,2025-Q2,0.0,0.0,0.0,PASS
+Premium + ad-supported revenue = total revenue,2025-Q3,4272.0,4272.0,0.0,PASS
+Gross profit / revenue = reported gross margin %,2025-Q3,31.6,31.625,0.025,PASS
+Gross profit - operating expenses = operating income,2025-Q3,582.0,582.0,0.0,PASS
+Operating income / revenue = reported operating margin %,2025-Q3,13.6,13.624,0.024,PASS
+Free cash flow <= operating cash flow,2025-Q3,0.0,0.0,0.0,PASS
+Premium + ad-supported revenue = total revenue,2025-Q4,4531.0,4531.0,0.0,PASS
+Gross profit / revenue = reported gross margin %,2025-Q4,33.1,33.083,-0.017,PASS
+Gross profit - operating expenses = operating income,2025-Q4,701.0,701.0,0.0,PASS
+Operating income / revenue = reported operating margin %,2025-Q4,15.5,15.471,-0.029,PASS
+Free cash flow <= operating cash flow,2025-Q4,0.0,0.0,0.0,PASS
+Sum of 2025 quarters = annual 2025 (premium_revenue_eur_millions),2025,15350.0,15350.0,0.0,PASS
+Sum of 2025 quarters = annual 2025 (ad_supported_revenue_eur_millions),2025,1836.0,1836.0,0.0,PASS
+Sum of 2025 quarters = annual 2025 (total_revenue_eur_millions),2025,17186.0,17186.0,0.0,PASS
+Sum of 2025 quarters = annual 2025 (gross_profit_eur_millions),2025,5496.0,5496.0,0.0,PASS
+Sum of 2025 quarters = annual 2025 (total_operating_expenses_eur_millions),2025,3298.0,3298.0,0.0,PASS
+Sum of 2025 quarters = annual 2025 (operating_income_eur_millions),2025,2198.0,2198.0,0.0,PASS
+Sum of 2025 quarters = annual 2025 (operating_cash_flow_eur_millions),2025,2933.0,2933.0,0.0,PASS
+Sum of 2025 quarters = annual 2025 (free_cash_flow_eur_millions),2025,2874.0,2874.0,0.0,PASS
+2024-Q4 = year-end 2024 (mau_millions),2024,675.0,675.0,0.0,PASS
+2024-Q4 = year-end 2024 (premium_subscribers_millions),2024,263.0,263.0,0.0,PASS
+2024-Q4 = year-end 2024 (ad_supported_mau_millions),2024,425.0,425.0,0.0,PASS
+2025-Q4 = year-end 2025 (mau_millions),2025,751.0,751.0,0.0,PASS
+2025-Q4 = year-end 2025 (premium_subscribers_millions),2025,290.0,290.0,0.0,PASS
+2025-Q4 = year-end 2025 (ad_supported_mau_millions),2025,476.0,476.0,0.0,PASS
+Premium net adds re-derived,2022,25.0,25.0,0.0,PASS
+MAU net adds re-derived,2022,83.0,83.0,0.0,PASS
+Monthly premium ARPU re-derived,2022,4.438,4.438,0.0,PASS
+Premium net adds re-derived,2023,31.0,31.0,0.0,PASS
+MAU net adds re-derived,2023,113.0,113.0,0.0,PASS
+Monthly premium ARPU re-derived,2023,4.371,4.371,0.0,PASS
+S&M per net premium add re-derived,2023,49.452,49.452,0.0,PASS
+Premium net adds re-derived,2024,27.0,27.0,0.0,PASS
+MAU net adds re-derived,2024,73.0,73.0,0.0,PASS
+Monthly premium ARPU re-derived,2024,4.616,4.616,0.0,PASS
+S&M per net premium add re-derived,2024,51.556,51.556,0.0,PASS
+Premium net adds re-derived,2025,27.0,27.0,0.0,PASS
+MAU net adds re-derived,2025,76.0,76.0,0.0,PASS
+Monthly premium ARPU re-derived,2025,4.626,4.626,0.0,PASS
+S&M per net premium add re-derived,2025,52.815,52.815,0.0,PASS

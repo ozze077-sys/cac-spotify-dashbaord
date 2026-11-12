@@ -1,0 +1,11 @@
+period,quarter_index,segment,revenue_eur_millions
+2024-Q4,1,Premium,3705
+2025-Q1,2,Premium,3771
+2025-Q2,3,Premium,3740
+2025-Q3,4,Premium,3826
+2025-Q4,5,Premium,4013
+2024-Q4,1,Ad-supported,537
+2025-Q1,2,Ad-supported,419
+2025-Q2,3,Ad-supported,453
+2025-Q3,4,Ad-supported,446
+2025-Q4,5,Ad-supported,518

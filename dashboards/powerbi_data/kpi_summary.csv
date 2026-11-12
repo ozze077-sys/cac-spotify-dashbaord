@@ -1,0 +1,19 @@
+year,metric,value,basis
+2025,Total revenue (EUR M),17186.0,Reported
+2025,Revenue growth YoY %,9.65354431187393,Calculated
+2025,Revenue CAGR 2021-2025 %,15.467441101930412,Calculated
+2025,Premium subscribers (M),290.0,Reported
+2025,MAU (M),751.0,Reported
+2025,Premium net adds (M),27.0,Calculated
+2025,Monthly premium ARPU (EUR),4.626280892103677,Analyst approximation
+2025,Gross margin %,31.979518212498547,Reported
+2025,Operating margin %,12.78947980914698,Reported
+2025,Operating income (EUR M),2198.0,Reported
+2025,Free cash flow (EUR M),2874.0,Reported (non-IFRS)
+2025,S&M % of revenue,8.29745141394158,Calculated
+2025,"CAC proxy, net adds (EUR)",52.81481481481482,Analyst proxy - not CAC
+2025,"CAC proxy, gross adds @3% churn (EUR)",11.269163900742848,Analyst proxy - not CAC
+2025,LTV @3% churn (EUR),49.315411348387855,Scenario estimate
+2025,"LTV:CAC, net-adds proxy (x)",0.9337420101027152,Scenario estimate
+2025,"LTV:CAC, gross-adds proxy (x)",4.376137554014726,Scenario estimate
+2025,"Payback, gross-adds proxy (months)",7.617067087562844,Scenario estimate

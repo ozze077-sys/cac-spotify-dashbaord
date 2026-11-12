@@ -1,0 +1,191 @@
+monthly_churn,column_value,value,metric,column_dimension
+1.5%,28%,86.29407365116592,LTV (EUR),Gross margin
+2.0%,28%,64.72055523837443,LTV (EUR),Gross margin
+2.5%,28%,51.77644419069954,LTV (EUR),Gross margin
+3.0%,28%,43.14703682558296,LTV (EUR),Gross margin
+3.5%,28%,36.98317442192825,LTV (EUR),Gross margin
+4.0%,28%,32.360277619187215,LTV (EUR),Gross margin
+4.5%,28%,28.764691217055304,LTV (EUR),Gross margin
+5.0%,28%,25.88822209534977,LTV (EUR),Gross margin
+5.5%,28%,23.534747359408886,LTV (EUR),Gross margin
+6.0%,28%,21.57351841279148,LTV (EUR),Gross margin
+1.5%,30%,92.4624481739708,LTV (EUR),Gross margin
+2.0%,30%,69.3468361304781,LTV (EUR),Gross margin
+2.5%,30%,55.47746890438248,LTV (EUR),Gross margin
+3.0%,30%,46.2312240869854,LTV (EUR),Gross margin
+3.5%,30%,39.626763503130334,LTV (EUR),Gross margin
+4.0%,30%,34.67341806523905,LTV (EUR),Gross margin
+4.5%,30%,30.820816057990267,LTV (EUR),Gross margin
+5.0%,30%,27.73873445219124,LTV (EUR),Gross margin
+5.5%,30%,25.217031320173852,LTV (EUR),Gross margin
+6.0%,30%,23.1156120434927,LTV (EUR),Gross margin
+1.5%,32%,98.63082269677571,LTV (EUR),Gross margin
+2.0%,32%,73.97311702258177,LTV (EUR),Gross margin
+2.5%,32%,59.178493618065424,LTV (EUR),Gross margin
+3.0%,32%,49.315411348387855,LTV (EUR),Gross margin
+3.5%,32%,42.27035258433244,LTV (EUR),Gross margin
+4.0%,32%,36.98655851129089,LTV (EUR),Gross margin
+4.5%,32%,32.876940898925234,LTV (EUR),Gross margin
+5.0%,32%,29.589246809032712,LTV (EUR),Gross margin
+5.5%,32%,26.89931528093883,LTV (EUR),Gross margin
+6.0%,32%,24.657705674193927,LTV (EUR),Gross margin
+1.5%,34%,104.7991972195806,LTV (EUR),Gross margin
+2.0%,34%,78.59939791468545,LTV (EUR),Gross margin
+2.5%,34%,62.87951833174836,LTV (EUR),Gross margin
+3.0%,34%,52.3995986097903,LTV (EUR),Gross margin
+3.5%,34%,44.913941665534544,LTV (EUR),Gross margin
+4.0%,34%,39.29969895734273,LTV (EUR),Gross margin
+4.5%,34%,34.933065739860204,LTV (EUR),Gross margin
+5.0%,34%,31.43975916587418,LTV (EUR),Gross margin
+5.5%,34%,28.581599241703803,LTV (EUR),Gross margin
+6.0%,34%,26.19979930489515,LTV (EUR),Gross margin
+1.5%,36%,110.9675717423855,LTV (EUR),Gross margin
+2.0%,36%,83.22567880678912,LTV (EUR),Gross margin
+2.5%,36%,66.5805430454313,LTV (EUR),Gross margin
+3.0%,36%,55.48378587119275,LTV (EUR),Gross margin
+3.5%,36%,47.55753074673664,LTV (EUR),Gross margin
+4.0%,36%,41.61283940339456,LTV (EUR),Gross margin
+4.5%,36%,36.98919058079517,LTV (EUR),Gross margin
+5.0%,36%,33.29027152271565,LTV (EUR),Gross margin
+5.5%,36%,30.263883202468772,LTV (EUR),Gross margin
+6.0%,36%,27.741892935596375,LTV (EUR),Gross margin
+1.5%,38%,117.13594626519043,LTV (EUR),Gross margin
+2.0%,38%,87.85195969889281,LTV (EUR),Gross margin
+2.5%,38%,70.28156775911424,LTV (EUR),Gross margin
+3.0%,38%,58.56797313259521,LTV (EUR),Gross margin
+3.5%,38%,50.20111982793875,LTV (EUR),Gross margin
+4.0%,38%,43.925979849446406,LTV (EUR),Gross margin
+4.5%,38%,39.04531542173014,LTV (EUR),Gross margin
+5.0%,38%,35.14078387955712,LTV (EUR),Gross margin
+5.5%,38%,31.94616716323375,LTV (EUR),Gross margin
+6.0%,38%,29.283986566297607,LTV (EUR),Gross margin
+1.5%,40%,123.30432078799532,LTV (EUR),Gross margin
+2.0%,40%,92.47824059099648,LTV (EUR),Gross margin
+2.5%,40%,73.98259247279718,LTV (EUR),Gross margin
+3.0%,40%,61.65216039399766,LTV (EUR),Gross margin
+3.5%,40%,52.84470890914084,LTV (EUR),Gross margin
+4.0%,40%,46.23912029549824,LTV (EUR),Gross margin
+4.5%,40%,41.10144026266511,LTV (EUR),Gross margin
+5.0%,40%,36.99129623639859,LTV (EUR),Gross margin
+5.5%,40%,33.62845112399872,LTV (EUR),Gross margin
+6.0%,40%,30.82608019699883,LTV (EUR),Gross margin
+1.5%,-20%,6.6373494551468015,LTV:CAC gross-adds proxy,S&M change
+2.0%,-20%,6.053760698832605,LTV:CAC gross-adds proxy,S&M change
+2.5%,-20%,5.703607445044087,LTV:CAC gross-adds proxy,S&M change
+3.0%,-20%,5.470171942518407,LTV:CAC gross-adds proxy,S&M change
+3.5%,-20%,5.303432297857208,LTV:CAC gross-adds proxy,S&M change
+4.0%,-20%,5.178377564361308,LTV:CAC gross-adds proxy,S&M change
+4.5%,-20%,5.081112771642276,LTV:CAC gross-adds proxy,S&M change
+5.0%,-20%,5.00330093746705,LTV:CAC gross-adds proxy,S&M change
+5.5%,-20%,4.939636709505502,LTV:CAC gross-adds proxy,S&M change
+6.0%,-20%,4.88658318620421,LTV:CAC gross-adds proxy,S&M change
+1.5%,-10%,5.899866182352712,LTV:CAC gross-adds proxy,S&M change
+2.0%,-10%,5.381120621184537,LTV:CAC gross-adds proxy,S&M change
+2.5%,-10%,5.069873284483632,LTV:CAC gross-adds proxy,S&M change
+3.0%,-10%,4.862375060016362,LTV:CAC gross-adds proxy,S&M change
+3.5%,-10%,4.71416204253974,LTV:CAC gross-adds proxy,S&M change
+4.0%,-10%,4.603002279432274,LTV:CAC gross-adds proxy,S&M change
+4.5%,-10%,4.516544685904244,LTV:CAC gross-adds proxy,S&M change
+5.0%,-10%,4.447378611081822,LTV:CAC gross-adds proxy,S&M change
+5.5%,-10%,4.390788186227112,LTV:CAC gross-adds proxy,S&M change
+6.0%,-10%,4.343629498848187,LTV:CAC gross-adds proxy,S&M change
+1.5%,+0%,5.30987956411744,LTV:CAC gross-adds proxy,S&M change
+2.0%,+0%,4.843008559066083,LTV:CAC gross-adds proxy,S&M change
+2.5%,+0%,4.562885956035269,LTV:CAC gross-adds proxy,S&M change
+3.0%,+0%,4.376137554014726,LTV:CAC gross-adds proxy,S&M change
+3.5%,+0%,4.242745838285766,LTV:CAC gross-adds proxy,S&M change
+4.0%,+0%,4.142702051489047,LTV:CAC gross-adds proxy,S&M change
+4.5%,+0%,4.06489021731382,LTV:CAC gross-adds proxy,S&M change
+5.0%,+0%,4.00264074997364,LTV:CAC gross-adds proxy,S&M change
+5.5%,+0%,3.951709367604401,LTV:CAC gross-adds proxy,S&M change
+6.0%,+0%,3.9092665489633682,LTV:CAC gross-adds proxy,S&M change
+1.5%,+10%,4.8271632401067635,LTV:CAC gross-adds proxy,S&M change
+2.0%,+10%,4.402735053696439,LTV:CAC gross-adds proxy,S&M change
+2.5%,+10%,4.1480781418502435,LTV:CAC gross-adds proxy,S&M change
+3.0%,+10%,3.9783068672861135,LTV:CAC gross-adds proxy,S&M change
+3.5%,+10%,3.8570416711688775,LTV:CAC gross-adds proxy,S&M change
+4.0%,+10%,3.7660927740809513,LTV:CAC gross-adds proxy,S&M change
+4.5%,+10%,3.695354743012564,LTV:CAC gross-adds proxy,S&M change
+5.0%,+10%,3.638764318157854,LTV:CAC gross-adds proxy,S&M change
+5.5%,+10%,3.5924630614585458,LTV:CAC gross-adds proxy,S&M change
+6.0%,+10%,3.5538786808757887,LTV:CAC gross-adds proxy,S&M change
+1.5%,+20%,4.424899636764534,LTV:CAC gross-adds proxy,S&M change
+2.0%,+20%,4.035840465888403,LTV:CAC gross-adds proxy,S&M change
+2.5%,+20%,3.802404963362724,LTV:CAC gross-adds proxy,S&M change
+3.0%,+20%,3.6467812950122713,LTV:CAC gross-adds proxy,S&M change
+3.5%,+20%,3.5356215319048045,LTV:CAC gross-adds proxy,S&M change
+4.0%,+20%,3.4522517095742056,LTV:CAC gross-adds proxy,S&M change
+4.5%,+20%,3.387408514428184,LTV:CAC gross-adds proxy,S&M change
+5.0%,+20%,3.335533958311366,LTV:CAC gross-adds proxy,S&M change
+5.5%,+20%,3.293091139670334,LTV:CAC gross-adds proxy,S&M change
+6.0%,+20%,3.25772212413614,LTV:CAC gross-adds proxy,S&M change
+1.5%,+30%,4.084522741628801,LTV:CAC gross-adds proxy,S&M change
+2.0%,+30%,3.725391199281602,LTV:CAC gross-adds proxy,S&M change
+2.5%,+30%,3.509912273873284,LTV:CAC gross-adds proxy,S&M change
+3.0%,+30%,3.3662596569344045,LTV:CAC gross-adds proxy,S&M change
+3.5%,+30%,3.2636506448352045,LTV:CAC gross-adds proxy,S&M change
+4.0%,+30%,3.1866938857608056,LTV:CAC gross-adds proxy,S&M change
+4.5%,+30%,3.1268386287029393,LTV:CAC gross-adds proxy,S&M change
+5.0%,+30%,3.0789544230566457,LTV:CAC gross-adds proxy,S&M change
+5.5%,+30%,3.03977643661877,LTV:CAC gross-adds proxy,S&M change
+6.0%,+30%,3.007128114587206,LTV:CAC gross-adds proxy,S&M change
+1.5%,-20%,2.334355025256788,LTV:CAC net-adds proxy,S&M change
+2.0%,-20%,1.7507662689425911,LTV:CAC net-adds proxy,S&M change
+2.5%,-20%,1.400613015154073,LTV:CAC net-adds proxy,S&M change
+3.0%,-20%,1.167177512628394,LTV:CAC net-adds proxy,S&M change
+3.5%,-20%,1.0004378679671948,LTV:CAC net-adds proxy,S&M change
+4.0%,-20%,0.8753831344712956,LTV:CAC net-adds proxy,S&M change
+4.5%,-20%,0.7781183417522627,LTV:CAC net-adds proxy,S&M change
+5.0%,-20%,0.7003065075770365,LTV:CAC net-adds proxy,S&M change
+5.5%,-20%,0.6366422796154877,LTV:CAC net-adds proxy,S&M change
+6.0%,-20%,0.583588756314197,LTV:CAC net-adds proxy,S&M change
+1.5%,-10%,2.0749822446727006,LTV:CAC net-adds proxy,S&M change
+2.0%,-10%,1.5562366835045252,LTV:CAC net-adds proxy,S&M change
+2.5%,-10%,1.2449893468036204,LTV:CAC net-adds proxy,S&M change
+3.0%,-10%,1.0374911223363503,LTV:CAC net-adds proxy,S&M change
+3.5%,-10%,0.8892781048597287,LTV:CAC net-adds proxy,S&M change
+4.0%,-10%,0.7781183417522626,LTV:CAC net-adds proxy,S&M change
+4.5%,-10%,0.6916607482242335,LTV:CAC net-adds proxy,S&M change
+5.0%,-10%,0.6224946734018102,LTV:CAC net-adds proxy,S&M change
+5.5%,-10%,0.5659042485471001,LTV:CAC net-adds proxy,S&M change
+6.0%,-10%,0.5187455611681752,LTV:CAC net-adds proxy,S&M change
+1.5%,+0%,1.8674840202054306,LTV:CAC net-adds proxy,S&M change
+2.0%,+0%,1.4006130151540728,LTV:CAC net-adds proxy,S&M change
+2.5%,+0%,1.1204904121232584,LTV:CAC net-adds proxy,S&M change
+3.0%,+0%,0.9337420101027153,LTV:CAC net-adds proxy,S&M change
+3.5%,+0%,0.8003502943737559,LTV:CAC net-adds proxy,S&M change
+4.0%,+0%,0.7003065075770364,LTV:CAC net-adds proxy,S&M change
+4.5%,+0%,0.6224946734018102,LTV:CAC net-adds proxy,S&M change
+5.0%,+0%,0.5602452060616292,LTV:CAC net-adds proxy,S&M change
+5.5%,+0%,0.5093138236923902,LTV:CAC net-adds proxy,S&M change
+6.0%,+0%,0.46687100505135765,LTV:CAC net-adds proxy,S&M change
+1.5%,+10%,1.6977127456413004,LTV:CAC net-adds proxy,S&M change
+2.0%,+10%,1.2732845592309752,LTV:CAC net-adds proxy,S&M change
+2.5%,+10%,1.0186276473847802,LTV:CAC net-adds proxy,S&M change
+3.0%,+10%,0.8488563728206502,LTV:CAC net-adds proxy,S&M change
+3.5%,+10%,0.7275911767034144,LTV:CAC net-adds proxy,S&M change
+4.0%,+10%,0.6366422796154876,LTV:CAC net-adds proxy,S&M change
+4.5%,+10%,0.5659042485471001,LTV:CAC net-adds proxy,S&M change
+5.0%,+10%,0.5093138236923901,LTV:CAC net-adds proxy,S&M change
+5.5%,+10%,0.4630125669930819,LTV:CAC net-adds proxy,S&M change
+6.0%,+10%,0.4244281864103251,LTV:CAC net-adds proxy,S&M change
+1.5%,+20%,1.5562366835045256,LTV:CAC net-adds proxy,S&M change
+2.0%,+20%,1.167177512628394,LTV:CAC net-adds proxy,S&M change
+2.5%,+20%,0.9337420101027153,LTV:CAC net-adds proxy,S&M change
+3.0%,+20%,0.7781183417522628,LTV:CAC net-adds proxy,S&M change
+3.5%,+20%,0.6669585786447966,LTV:CAC net-adds proxy,S&M change
+4.0%,+20%,0.583588756314197,LTV:CAC net-adds proxy,S&M change
+4.5%,+20%,0.5187455611681752,LTV:CAC net-adds proxy,S&M change
+5.0%,+20%,0.46687100505135765,LTV:CAC net-adds proxy,S&M change
+5.5%,+20%,0.42442818641032515,LTV:CAC net-adds proxy,S&M change
+6.0%,+20%,0.3890591708761314,LTV:CAC net-adds proxy,S&M change
+1.5%,+30%,1.436526169388793,LTV:CAC net-adds proxy,S&M change
+2.0%,+30%,1.0773946270415946,LTV:CAC net-adds proxy,S&M change
+2.5%,+30%,0.8619157016332757,LTV:CAC net-adds proxy,S&M change
+3.0%,+30%,0.7182630846943965,LTV:CAC net-adds proxy,S&M change
+3.5%,+30%,0.6156540725951969,LTV:CAC net-adds proxy,S&M change
+4.0%,+30%,0.5386973135207973,LTV:CAC net-adds proxy,S&M change
+4.5%,+30%,0.47884205646293093,LTV:CAC net-adds proxy,S&M change
+5.0%,+30%,0.43095785081663784,LTV:CAC net-adds proxy,S&M change
+5.5%,+30%,0.39177986437876167,LTV:CAC net-adds proxy,S&M change
+6.0%,+30%,0.35913154234719824,LTV:CAC net-adds proxy,S&M change

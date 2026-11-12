@@ -1,0 +1,11 @@
+period,frequency,usd_per_eur,source
+2021,annual,1.18274,"ECB euro foreign exchange reference rates, series EXR A.USD.EUR.SP00.A (average of period)"
+2022,annual,1.053049,"ECB euro foreign exchange reference rates, series EXR A.USD.EUR.SP00.A (average of period)"
+2023,annual,1.081269,"ECB euro foreign exchange reference rates, series EXR A.USD.EUR.SP00.A (average of period)"
+2024,annual,1.08238,"ECB euro foreign exchange reference rates, series EXR A.USD.EUR.SP00.A (average of period)"
+2025,annual,1.129983,"ECB euro foreign exchange reference rates, series EXR A.USD.EUR.SP00.A (average of period)"
+2024-Q4,quarterly,1.068137,"ECB euro foreign exchange reference rates, series EXR Q.USD.EUR.SP00.A (average of period)"
+2025-Q1,quarterly,1.052341,"ECB euro foreign exchange reference rates, series EXR Q.USD.EUR.SP00.A (average of period)"
+2025-Q2,quarterly,1.133803,"ECB euro foreign exchange reference rates, series EXR Q.USD.EUR.SP00.A (average of period)"
+2025-Q3,quarterly,1.168086,"ECB euro foreign exchange reference rates, series EXR Q.USD.EUR.SP00.A (average of period)"
+2025-Q4,quarterly,1.163417,"ECB euro foreign exchange reference rates, series EXR Q.USD.EUR.SP00.A (average of period)"

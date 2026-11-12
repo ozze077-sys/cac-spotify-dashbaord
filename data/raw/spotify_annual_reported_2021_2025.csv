@@ -1,0 +1,6 @@
+year,mau_millions,premium_subscribers_millions,ad_supported_mau_millions,premium_revenue_eur_millions,ad_supported_revenue_eur_millions,total_revenue_eur_millions,gross_profit_eur_millions,gross_margin_pct,total_operating_expenses_eur_millions,operating_income_eur_millions,operating_margin_pct,operating_cash_flow_eur_millions,free_cash_flow_eur_millions,sales_marketing_expense_eur_millions,premium_subscriber_net_adds_millions,mau_net_adds_millions,premium_revenue_per_avg_subscriber_per_month_eur_approx,sales_marketing_per_net_added_premium_subscriber_eur_proxy
+2021,406,180,236,8460,1208,9668,2591,26.8,2497,94,1.0,361,277,,,,,
+2022,489,205,295,10251,1476,11727,2926,25.0,3585,-659,-5.6,46,21,,25.0,83.0,4.437662337662338,
+2023,602,236,379,11566,1681,13247,3397,25.6,3843,-446,-3.4,680,678,1533.0,31.0,113.0,4.371126228269086,49.45161290322581
+2024,675,263,425,13819,1854,15673,4724,30.1,3359,1365,8.7,2301,2285,1392.0,27.0,73.0,4.615564462257849,51.55555555555556
+2025,751,290,476,15350,1836,17186,5496,32.0,3298,2198,12.8,2933,2874,1426.0,27.0,76.0,4.626280892103677,52.81481481481482

@@ -1,0 +1,83 @@
+// =====================================================================================
+// Spotify Unit Economics - DAX measures
+// Create a table named _Measures (Enter data -> one blank column) and add each measure
+// below via Modeling -> New measure. Table names match the CSV file names in powerbi_data/.
+// Year-based KPIs expect a single-select slicer on fact_annual[year] (default 2025).
+// =====================================================================================
+
+// ---------- Base measures --------------------------------------------------------------
+Total Revenue = SUM ( fact_annual[total_revenue_eur_millions] )
+Premium Revenue = SUM ( fact_annual[premium_revenue_eur_millions] )
+Ad Revenue = SUM ( fact_annual[ad_supported_revenue_eur_millions] )
+Premium Subscribers = SUM ( fact_annual[premium_subscribers_millions] )
+MAU = SUM ( fact_annual[mau_millions] )
+Gross Profit = SUM ( fact_annual[gross_profit_eur_millions] )
+Operating Expenses = SUM ( fact_annual[total_operating_expenses_eur_millions] )
+Operating Income = SUM ( fact_annual[operating_income_eur_millions] )
+Free Cash Flow = SUM ( fact_annual[free_cash_flow_eur_millions] )
+S&M Expense = SUM ( fact_annual[sales_marketing_expense_eur_millions] )
+
+// ---------- Prior year & growth -------------------------------------------------------
+Revenue PY =
+VAR y = MAX ( fact_annual[year] )
+RETURN CALCULATE ( [Total Revenue], REMOVEFILTERS ( fact_annual ), fact_annual[year] = y - 1 )
+
+Premium Subscribers PY =
+VAR y = MAX ( fact_annual[year] )
+RETURN CALCULATE ( [Premium Subscribers], REMOVEFILTERS ( fact_annual ), fact_annual[year] = y - 1 )
+
+MAU PY =
+VAR y = MAX ( fact_annual[year] )
+RETURN CALCULATE ( [MAU], REMOVEFILTERS ( fact_annual ), fact_annual[year] = y - 1 )
+
+Revenue Growth % = DIVIDE ( [Total Revenue] - [Revenue PY], [Revenue PY] )
+Subscriber Growth % = DIVIDE ( [Premium Subscribers] - [Premium Subscribers PY], [Premium Subscribers PY] )
+MAU Growth % = DIVIDE ( [MAU] - [MAU PY], [MAU PY] )
+Premium Net Adds = IF ( NOT ISBLANK ( [Premium Subscribers PY] ), [Premium Subscribers] - [Premium Subscribers PY] )
+
+// ---------- Margins & ratios ---------------------------------------------------------
+Gross Margin % = DIVIDE ( [Gross Profit], [Total Revenue] )
+Operating Margin % = DIVIDE ( [Operating Income], [Total Revenue] )
+Opex Ratio % = DIVIDE ( [Operating Expenses], [Total Revenue] )
+S&M % of Revenue = DIVIDE ( [S&M Expense], [Total Revenue] )
+FCF Margin % = DIVIDE ( [Free Cash Flow], [Total Revenue] )
+Premium Revenue Mix % = DIVIDE ( [Premium Revenue], [Total Revenue] )
+
+// ---------- Subscriber economics -----------------------------------------------------
+Avg Premium Subscribers = DIVIDE ( [Premium Subscribers] + [Premium Subscribers PY], 2 )
+Monthly Premium ARPU = DIVIDE ( [Premium Revenue], [Avg Premium Subscribers] ) / 12
+CAC Proxy (Net Adds) = DIVIDE ( [S&M Expense], [Premium Net Adds] )
+
+// ---------- What-if parameters -------------------------------------------------------
+// Create with Modeling -> New parameter -> Numeric range (tick "Add slicer to this page"):
+//   Monthly Churn      min 0.01  max 0.08  increment 0.005  default 0.03   (format %)
+//   ARPU Change        min -0.20 max 0.20  increment 0.01   default 0      (format %)
+//   GM Change          min -0.05 max 0.10  increment 0.005  default 0      (format %, = percentage points)
+//   S&M Change         min -0.30 max 0.50  increment 0.05   default 0      (format %)
+//   Net Adds Change    min -0.50 max 0.50  increment 0.05   default 0      (format %)
+// Power BI auto-creates measures named [Monthly Churn Value], [ARPU Change Value], etc.
+
+// ---------- What-if unit economics (base year = dim_unit_economics_base) -------------
+WI ARPU = MAX ( dim_unit_economics_base[monthly_arpu_eur] ) * ( 1 + [ARPU Change Value] )
+WI Gross Margin = MAX ( dim_unit_economics_base[gross_margin_pct] ) / 100 + [GM Change Value]
+WI S&M = MAX ( dim_unit_economics_base[sm_expense_eur_millions] ) * ( 1 + [S&M Change Value] )
+WI Net Adds = MAX ( dim_unit_economics_base[net_adds_millions] ) * ( 1 + [Net Adds Change Value] )
+WI Avg Subscribers =
+    MAX ( dim_unit_economics_base[avg_premium_subscribers_millions] )
+        - MAX ( dim_unit_economics_base[net_adds_millions] ) / 2
+        + [WI Net Adds] / 2
+WI Monthly GP per Sub = [WI ARPU] * [WI Gross Margin]
+WI Lifetime Months = DIVIDE ( 1, [Monthly Churn Value] )
+WI LTV = DIVIDE ( [WI Monthly GP per Sub], [Monthly Churn Value] )
+WI Gross Adds = [WI Net Adds] + [WI Avg Subscribers] * [Monthly Churn Value] * 12
+WI CAC Proxy Net = DIVIDE ( [WI S&M], [WI Net Adds] )
+WI CAC Proxy Gross = DIVIDE ( [WI S&M], [WI Gross Adds] )
+WI LTV to CAC Net = DIVIDE ( [WI LTV], [WI CAC Proxy Net] )
+WI LTV to CAC Gross = DIVIDE ( [WI LTV], [WI CAC Proxy Gross] )
+WI Payback Months Net = DIVIDE ( [WI CAC Proxy Net], [WI Monthly GP per Sub] )
+WI Payback Months Gross = DIVIDE ( [WI CAC Proxy Gross], [WI Monthly GP per Sub] )
+WI Payback Status =
+    IF ( [WI Payback Months Gross] < [WI Lifetime Months], "Recovered within lifetime", "Not recovered" )
+
+// ---------- Labels -------------------------------------------------------------------
+Proxy Disclaimer = "CAC figures are proxies (all S&M / subscribers added). Churn is hypothetical; Spotify does not disclose it."
