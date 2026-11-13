@@ -1638,6 +1638,7 @@ chip_box = html.Div([
           "padding": "4px 12px", "boxShadow": "0 1px 2px rgba(16,24,40,0.05)"})
 
 app = Dash(__name__, title="Spotify Unit Economics", suppress_callback_exceptions=True)
+server = app.server  # WSGI entry point for hosting, e.g. gunicorn --chdir dashboards dashboard:server
 app.index_string = app.index_string.replace("{%css%}", "{%css%}<style>" + CSS + "</style>")
 app.layout = html.Div([
     dcc.Location(id="url", refresh=False),
