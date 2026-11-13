@@ -1,0 +1,64 @@
+table fact_quarterly
+
+	column period
+		dataType: string
+		summarizeBy: none
+		sourceColumn: period
+
+	column quarter_index
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: quarter_index
+
+	column total_rev_usd_m
+		dataType: double
+		formatString: $#,0
+		summarizeBy: none
+		sourceColumn: total_rev_usd_m
+
+	column premium_rev_usd_m
+		dataType: double
+		formatString: $#,0
+		summarizeBy: none
+		sourceColumn: premium_rev_usd_m
+
+	column ad_rev_usd_m
+		dataType: double
+		formatString: $#,0
+		summarizeBy: none
+		sourceColumn: ad_rev_usd_m
+
+	column gross_margin
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: gross_margin
+
+	column op_margin
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: op_margin
+
+	column premium_net_adds_m
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: none
+		sourceColumn: premium_net_adds_m
+
+	column arpu_monthly_usd
+		dataType: double
+		formatString: $#,0.00
+		summarizeBy: none
+		sourceColumn: arpu_monthly_usd
+
+	partition fact_quarterly = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "fact_quarterly.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"period", type text}, {"quarter_index", Int64.Type}, {"total_rev_usd_m", type number}, {"premium_rev_usd_m", type number}, {"ad_rev_usd_m", type number}, {"gross_margin", type number}, {"op_margin", type number}, {"premium_net_adds_m", type number}, {"arpu_monthly_usd", type number}}, "en-US")
+				in
+				    Typed

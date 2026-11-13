@@ -1,0 +1,39 @@
+table assumptions
+
+	column assumption
+		dataType: string
+		sortByColumn: order
+		summarizeBy: none
+		sourceColumn: assumption
+
+	column default
+		dataType: string
+		summarizeBy: none
+		sourceColumn: default
+
+	column what_it_is
+		dataType: string
+		summarizeBy: none
+		sourceColumn: what_it_is
+
+	column what_it_changes
+		dataType: string
+		summarizeBy: none
+		sourceColumn: what_it_changes
+
+	column order
+		dataType: int64
+		formatString: 0
+		isHidden
+		summarizeBy: none
+		sourceColumn: order
+
+	partition assumptions = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "assumptions.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"assumption", type text}, {"default", type text}, {"what_it_is", type text}, {"what_it_changes", type text}, {"order", Int64.Type}}, "en-US")
+				in
+				    Typed

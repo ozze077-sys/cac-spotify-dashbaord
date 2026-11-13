@@ -1,0 +1,145 @@
+{
+  "name": "Spotify Green",
+  "dataColors": [
+    "#1DB954",
+    "#121212",
+    "#9E9E9E",
+    "#148A3E",
+    "#7EE2A8",
+    "#535353",
+    "#C9ECD6",
+    "#2A2E35"
+  ],
+  "background": "#FFFFFF",
+  "foreground": "#121212",
+  "tableAccent": "#1DB954",
+  "good": "#1DB954",
+  "neutral": "#9E9E9E",
+  "bad": "#121212",
+  "maximum": "#1DB954",
+  "center": "#C9ECD6",
+  "minimum": "#F6F8F7",
+  "textClasses": {
+    "callout": {
+      "fontFace": "Segoe UI Semibold",
+      "color": "#121212"
+    },
+    "title": {
+      "fontFace": "Segoe UI Semibold",
+      "color": "#121212",
+      "fontSize": 11
+    },
+    "header": {
+      "fontFace": "Segoe UI Semibold",
+      "color": "#121212"
+    },
+    "label": {
+      "fontFace": "Segoe UI",
+      "color": "#4B5058"
+    }
+  },
+  "visualStyles": {
+    "*": {
+      "*": {
+        "background": [
+          {
+            "show": true,
+            "color": {
+              "solid": {
+                "color": "#FFFFFF"
+              }
+            },
+            "transparency": 0
+          }
+        ],
+        "border": [
+          {
+            "show": true,
+            "color": {
+              "solid": {
+                "color": "#E8E8E8"
+              }
+            },
+            "radius": 10
+          }
+        ],
+        "dropShadow": [
+          {
+            "show": false
+          }
+        ],
+        "title": [
+          {
+            "fontColor": {
+              "solid": {
+                "color": "#121212"
+              }
+            },
+            "fontSize": 11,
+            "bold": true
+          }
+        ],
+        "padding": [
+          {
+            "top": 8,
+            "bottom": 8,
+            "left": 10,
+            "right": 10
+          }
+        ]
+      }
+    },
+    "page": {
+      "*": {
+        "background": [
+          {
+            "color": {
+              "solid": {
+                "color": "#F7F7F7"
+              }
+            },
+            "transparency": 0
+          }
+        ],
+        "outspace": [
+          {
+            "color": {
+              "solid": {
+                "color": "#F7F7F7"
+              }
+            },
+            "transparency": 0
+          }
+        ]
+      }
+    },
+    "slicer": {
+      "*": {
+        "items": [
+          {
+            "fontColor": {
+              "solid": {
+                "color": "#121212"
+              }
+            },
+            "textSize": 10
+          }
+        ]
+      }
+    },
+    "tableEx": {
+      "*": {
+        "columnHeaders": [
+          {
+            "bold": true,
+            "fontColor": {
+              "solid": {
+                "color": "#121212"
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

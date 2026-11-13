@@ -1,0 +1,30 @@
+table grid_gm
+
+	column gm_change
+		dataType: double
+		formatString: +0.0%;-0.0%;0.0%
+		summarizeBy: none
+		sourceColumn: gm_change
+
+	column gm_label
+		dataType: string
+		sortByColumn: gm_order
+		summarizeBy: none
+		sourceColumn: gm_label
+
+	column gm_order
+		dataType: int64
+		formatString: 0
+		isHidden
+		summarizeBy: none
+		sourceColumn: gm_order
+
+	partition grid_gm = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "grid_gm.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"gm_change", type number}, {"gm_label", type text}, {"gm_order", Int64.Type}}, "en-US")
+				in
+				    Typed

@@ -1,0 +1,28 @@
+table mc_drivers
+
+	column input
+		dataType: string
+		summarizeBy: none
+		sourceColumn: input
+
+	column correlation
+		dataType: double
+		formatString: +0.00;-0.00;0.00
+		summarizeBy: none
+		sourceColumn: correlation
+
+	column abs_corr
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: none
+		sourceColumn: abs_corr
+
+	partition mc_drivers = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "mc_drivers.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"input", type text}, {"correlation", type number}, {"abs_corr", type number}}, "en-US")
+				in
+				    Typed

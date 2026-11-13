@@ -1,0 +1,16 @@
+table p_proxy
+
+	column proxy
+		dataType: string
+		summarizeBy: none
+		sourceColumn: proxy
+
+	partition p_proxy = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "p_proxy.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"proxy", type text}}, "en-US")
+				in
+				    Typed

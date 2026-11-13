@@ -1,0 +1,23 @@
+table grid_churn
+
+	column churn
+		dataType: double
+		formatString: 0.00%
+		summarizeBy: none
+		sourceColumn: churn
+
+	column churn_label
+		dataType: string
+		sortByColumn: churn
+		summarizeBy: none
+		sourceColumn: churn_label
+
+	partition grid_churn = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "grid_churn.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"churn", type number}, {"churn_label", type text}}, "en-US")
+				in
+				    Typed

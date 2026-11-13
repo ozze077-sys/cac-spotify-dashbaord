@@ -1,0 +1,17 @@
+table churn_curve
+
+	column churn
+		dataType: double
+		formatString: 0.00%
+		summarizeBy: none
+		sourceColumn: churn
+
+	partition churn_curve = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "churn_curve.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"churn", type number}}, "en-US")
+				in
+				    Typed

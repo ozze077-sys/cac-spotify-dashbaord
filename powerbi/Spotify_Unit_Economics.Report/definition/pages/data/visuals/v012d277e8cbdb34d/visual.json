@@ -1,0 +1,212 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
+  "name": "v012d277e8cbdb34d",
+  "position": {
+    "x": 216,
+    "y": 76,
+    "z": 1000,
+    "width": 1248,
+    "height": 250,
+    "tabOrder": 1000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "drillFilterOtherVisuals": true,
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_annual"
+                    }
+                  },
+                  "Property": "year_label"
+                }
+              },
+              "queryRef": "fact_annual.year_label",
+              "nativeQueryRef": "year_label"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_annual"
+                    }
+                  },
+                  "Property": "total_rev_usd_m"
+                }
+              },
+              "queryRef": "fact_annual.total_rev_usd_m",
+              "nativeQueryRef": "total_rev_usd_m"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_annual"
+                    }
+                  },
+                  "Property": "premium_rev_usd_m"
+                }
+              },
+              "queryRef": "fact_annual.premium_rev_usd_m",
+              "nativeQueryRef": "premium_rev_usd_m"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_annual"
+                    }
+                  },
+                  "Property": "ad_rev_usd_m"
+                }
+              },
+              "queryRef": "fact_annual.ad_rev_usd_m",
+              "nativeQueryRef": "ad_rev_usd_m"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_annual"
+                    }
+                  },
+                  "Property": "premium_subs_m"
+                }
+              },
+              "queryRef": "fact_annual.premium_subs_m",
+              "nativeQueryRef": "premium_subs_m"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_annual"
+                    }
+                  },
+                  "Property": "mau_m"
+                }
+              },
+              "queryRef": "fact_annual.mau_m",
+              "nativeQueryRef": "mau_m"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_annual"
+                    }
+                  },
+                  "Property": "gross_margin"
+                }
+              },
+              "queryRef": "fact_annual.gross_margin",
+              "nativeQueryRef": "gross_margin"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_annual"
+                    }
+                  },
+                  "Property": "op_income_usd_m"
+                }
+              },
+              "queryRef": "fact_annual.op_income_usd_m",
+              "nativeQueryRef": "op_income_usd_m"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fact_annual"
+                    }
+                  },
+                  "Property": "fcf_usd_m"
+                }
+              },
+              "queryRef": "fact_annual.fcf_usd_m",
+              "nativeQueryRef": "fcf_usd_m"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Annual reported data (US dollars)'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
+                }
+              }
+            },
+            "bold": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#121212'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

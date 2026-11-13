@@ -1,0 +1,21 @@
+table glossary
+
+	column term
+		dataType: string
+		summarizeBy: none
+		sourceColumn: term
+
+	column meaning
+		dataType: string
+		summarizeBy: none
+		sourceColumn: meaning
+
+	partition glossary = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "glossary.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"term", type text}, {"meaning", type text}}, "en-US")
+				in
+				    Typed

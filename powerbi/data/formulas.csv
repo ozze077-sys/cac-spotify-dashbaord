@@ -1,0 +1,10 @@
+metric,formula
+Growth,(Current - Previous) / Previous
+Monthly premium ARPU,Premium revenue / average subscribers / 12
+LTV,Monthly ARPU x gross margin / monthly churn
+CAC proxy (simple),S&M / premium net adds
+CAC proxy (realistic),S&M / (net adds + average subscribers x churn x 12)
+LTV:CAC,LTV / CAC
+Payback,CAC / (monthly ARPU x gross margin)
+Cohort retention,"1,000 x (1 - monthly churn) ^ months"
+Currency,EUR converted to USD at the ECB average rate of each year / quarter

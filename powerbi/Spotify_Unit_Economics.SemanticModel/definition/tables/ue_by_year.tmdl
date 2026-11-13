@@ -1,0 +1,70 @@
+table ue_by_year
+
+	column year
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: year
+
+	column year_label
+		dataType: string
+		summarizeBy: none
+		sourceColumn: year_label
+
+	column arpu_usd
+		dataType: double
+		formatString: $#,0.00
+		summarizeBy: none
+		sourceColumn: arpu_usd
+
+	column ltv_usd
+		dataType: double
+		formatString: $#,0.00
+		summarizeBy: none
+		sourceColumn: ltv_usd
+
+	column cac_net_usd
+		dataType: double
+		formatString: $#,0.00
+		summarizeBy: none
+		sourceColumn: cac_net_usd
+
+	column cac_gross_usd
+		dataType: double
+		formatString: $#,0.00
+		summarizeBy: none
+		sourceColumn: cac_gross_usd
+
+	column ltv_cac_net
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: none
+		sourceColumn: ltv_cac_net
+
+	column ltv_cac_gross
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: none
+		sourceColumn: ltv_cac_gross
+
+	column payback_net
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: none
+		sourceColumn: payback_net
+
+	column payback_gross
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: none
+		sourceColumn: payback_gross
+
+	partition ue_by_year = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "ue_by_year.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"year", Int64.Type}, {"year_label", type text}, {"arpu_usd", type number}, {"ltv_usd", type number}, {"cac_net_usd", type number}, {"cac_gross_usd", type number}, {"ltv_cac_net", type number}, {"ltv_cac_gross", type number}, {"payback_net", type number}, {"payback_gross", type number}}, "en-US")
+				in
+				    Typed

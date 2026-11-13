@@ -1,0 +1,8 @@
+assumption,default,what_it_is,what_it_changes,order
+Monthly churn,3.0%,Share of paying subscribers who cancel each month. Spotify does not publish it.,"LTV, average stay, realistic CAC, payback",0
+ARPU change,0%,Raise or cut the base-year monthly revenue per subscriber.,"LTV, payback",1
+Gross margin change,0pp,Shift the base-year gross margin (royalties and delivery costs).,"LTV, payback",2
+Marketing spend change,0%,Raise or cut base-year sales & marketing spend.,"CAC, LTV:CAC, payback",3
+Net adds change,0%,Raise or cut base-year growth in paying subscribers.,"CAC, LTV:CAC",4
+CAC proxy,Realistic (gross adds),Realistic counts subscribers won to replace cancellations; simple divides marketing by growth only.,"CAC, LTV:CAC, payback",5
+Base year,2025,Which year's actual numbers feed the model (2023 is the first year with marketing data).,Every unit-economics figure,6

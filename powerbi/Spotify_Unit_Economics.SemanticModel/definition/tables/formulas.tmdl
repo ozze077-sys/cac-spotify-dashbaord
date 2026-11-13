@@ -1,0 +1,21 @@
+table formulas
+
+	column metric
+		dataType: string
+		summarizeBy: none
+		sourceColumn: metric
+
+	column formula
+		dataType: string
+		summarizeBy: none
+		sourceColumn: formula
+
+	partition formulas = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "formulas.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"metric", type text}, {"formula", type text}}, "en-US")
+				in
+				    Typed

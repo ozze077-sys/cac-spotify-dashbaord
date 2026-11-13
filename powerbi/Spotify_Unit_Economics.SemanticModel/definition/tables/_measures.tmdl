@@ -1,0 +1,384 @@
+table _measures
+
+	measure 'Sel Year' = SELECTEDVALUE(year_selector[year], MAX(year_selector[year]))
+		formatString: 0
+
+	measure 'Revenue (Y)' = VAR y = [Sel Year] RETURN CALCULATE(SUM(fact_annual[total_rev_usd_m]), fact_annual[year] = y) / 1000
+		formatString: $#,0.00"B"
+
+	measure 'Revenue (Y) Change' = VAR y = [Sel Year] VAR cur = CALCULATE(SUM(fact_annual[total_rev_usd_m]), fact_annual[year] = y) VAR prev = CALCULATE(SUM(fact_annual[total_rev_usd_m]), fact_annual[year] = y - 1) VAR d = cur - prev RETURN IF(ISBLANK(cur), "Not reported for " & y, IF(ISBLANK(prev), "First year in the data", IF(d >= 0, "▲ ", "▼ ") & FORMAT(d / 1000, "+$#,0.00;-$#,0.00") & "B" & " vs " & (y - 1)))
+
+	measure 'Premium Revenue (Y)' = VAR y = [Sel Year] RETURN CALCULATE(SUM(fact_annual[premium_rev_usd_m]), fact_annual[year] = y) / 1000
+		formatString: $#,0.00"B"
+
+	measure 'Premium Revenue (Y) Change' = VAR y = [Sel Year] VAR cur = CALCULATE(SUM(fact_annual[premium_rev_usd_m]), fact_annual[year] = y) VAR prev = CALCULATE(SUM(fact_annual[premium_rev_usd_m]), fact_annual[year] = y - 1) VAR d = cur - prev RETURN IF(ISBLANK(cur), "Not reported for " & y, IF(ISBLANK(prev), "First year in the data", IF(d >= 0, "▲ ", "▼ ") & FORMAT(d / 1000, "+$#,0.00;-$#,0.00") & "B" & " vs " & (y - 1)))
+
+	measure 'Ad Revenue (Y)' = VAR y = [Sel Year] RETURN CALCULATE(SUM(fact_annual[ad_rev_usd_m]), fact_annual[year] = y) / 1000
+		formatString: $#,0.00"B"
+
+	measure 'Ad Revenue (Y) Change' = VAR y = [Sel Year] VAR cur = CALCULATE(SUM(fact_annual[ad_rev_usd_m]), fact_annual[year] = y) VAR prev = CALCULATE(SUM(fact_annual[ad_rev_usd_m]), fact_annual[year] = y - 1) VAR d = cur - prev RETURN IF(ISBLANK(cur), "Not reported for " & y, IF(ISBLANK(prev), "First year in the data", IF(d >= 0, "▲ ", "▼ ") & FORMAT(d / 1000, "+$#,0.00;-$#,0.00") & "B" & " vs " & (y - 1)))
+
+	measure 'Revenue Growth (Y)' = VAR y = [Sel Year] RETURN CALCULATE(SUM(fact_annual[rev_growth]), fact_annual[year] = y)
+		formatString: 0.0%
+
+	measure 'Revenue Growth (Y) Change' = VAR y = [Sel Year] VAR cur = CALCULATE(SUM(fact_annual[rev_growth]), fact_annual[year] = y) VAR prev = CALCULATE(SUM(fact_annual[rev_growth]), fact_annual[year] = y - 1) VAR d = cur - prev RETURN IF(ISBLANK(cur), "Not reported for " & y, IF(ISBLANK(prev), "First year in the data", IF(d >= 0, "▲ ", "▼ ") & FORMAT(d * 100, "+0.0;-0.0") & "pp" & " vs " & (y - 1)))
+
+	measure 'Premium Mix (Y)' = VAR y = [Sel Year] RETURN CALCULATE(SUM(fact_annual[premium_mix]), fact_annual[year] = y)
+		formatString: 0.0%
+
+	measure 'Premium Mix (Y) Change' = VAR y = [Sel Year] VAR cur = CALCULATE(SUM(fact_annual[premium_mix]), fact_annual[year] = y) VAR prev = CALCULATE(SUM(fact_annual[premium_mix]), fact_annual[year] = y - 1) VAR d = cur - prev RETURN IF(ISBLANK(cur), "Not reported for " & y, IF(ISBLANK(prev), "First year in the data", IF(d >= 0, "▲ ", "▼ ") & FORMAT(d * 100, "+0.0;-0.0") & "pp" & " vs " & (y - 1)))
+
+	measure 'Premium Subscribers (Y)' = VAR y = [Sel Year] RETURN CALCULATE(SUM(fact_annual[premium_subs_m]), fact_annual[year] = y)
+		formatString: #,0"M"
+
+	measure 'Premium Subscribers (Y) Change' = VAR y = [Sel Year] VAR cur = CALCULATE(SUM(fact_annual[premium_subs_m]), fact_annual[year] = y) VAR prev = CALCULATE(SUM(fact_annual[premium_subs_m]), fact_annual[year] = y - 1) VAR d = cur - prev RETURN IF(ISBLANK(cur), "Not reported for " & y, IF(ISBLANK(prev), "First year in the data", IF(d >= 0, "▲ ", "▼ ") & FORMAT(d, "+#,0;-#,0") & "M" & " vs " & (y - 1)))
+
+	measure 'MAU (Y)' = VAR y = [Sel Year] RETURN CALCULATE(SUM(fact_annual[mau_m]), fact_annual[year] = y)
+		formatString: #,0"M"
+
+	measure 'MAU (Y) Change' = VAR y = [Sel Year] VAR cur = CALCULATE(SUM(fact_annual[mau_m]), fact_annual[year] = y) VAR prev = CALCULATE(SUM(fact_annual[mau_m]), fact_annual[year] = y - 1) VAR d = cur - prev RETURN IF(ISBLANK(cur), "Not reported for " & y, IF(ISBLANK(prev), "First year in the data", IF(d >= 0, "▲ ", "▼ ") & FORMAT(d, "+#,0;-#,0") & "M" & " vs " & (y - 1)))
+
+	measure 'Ad MAU (Y)' = VAR y = [Sel Year] RETURN CALCULATE(SUM(fact_annual[ad_mau_m]), fact_annual[year] = y)
+		formatString: #,0"M"
+
+	measure 'Ad MAU (Y) Change' = VAR y = [Sel Year] VAR cur = CALCULATE(SUM(fact_annual[ad_mau_m]), fact_annual[year] = y) VAR prev = CALCULATE(SUM(fact_annual[ad_mau_m]), fact_annual[year] = y - 1) VAR d = cur - prev RETURN IF(ISBLANK(cur), "Not reported for " & y, IF(ISBLANK(prev), "First year in the data", IF(d >= 0, "▲ ", "▼ ") & FORMAT(d, "+#,0;-#,0") & "M" & " vs " & (y - 1)))
+
+	measure 'Net Adds (Y)' = VAR y = [Sel Year] RETURN CALCULATE(SUM(fact_annual[premium_net_adds_m]), fact_annual[year] = y)
+		formatString: #,0"M"
+
+	measure 'Net Adds (Y) Change' = VAR y = [Sel Year] VAR cur = CALCULATE(SUM(fact_annual[premium_net_adds_m]), fact_annual[year] = y) VAR prev = CALCULATE(SUM(fact_annual[premium_net_adds_m]), fact_annual[year] = y - 1) VAR d = cur - prev RETURN IF(ISBLANK(cur), "Not reported for " & y, IF(ISBLANK(prev), "First year in the data", IF(d >= 0, "▲ ", "▼ ") & FORMAT(d, "+#,0;-#,0") & "M" & " vs " & (y - 1)))
+
+	measure 'Paying Share (Y)' = VAR y = [Sel Year] RETURN CALCULATE(SUM(fact_annual[paying_share]), fact_annual[year] = y)
+		formatString: 0.0%
+
+	measure 'Paying Share (Y) Change' = VAR y = [Sel Year] VAR cur = CALCULATE(SUM(fact_annual[paying_share]), fact_annual[year] = y) VAR prev = CALCULATE(SUM(fact_annual[paying_share]), fact_annual[year] = y - 1) VAR d = cur - prev RETURN IF(ISBLANK(cur), "Not reported for " & y, IF(ISBLANK(prev), "First year in the data", IF(d >= 0, "▲ ", "▼ ") & FORMAT(d * 100, "+0.0;-0.0") & "pp" & " vs " & (y - 1)))
+
+	measure 'ARPU (Y)' = VAR y = [Sel Year] RETURN CALCULATE(SUM(fact_annual[arpu_monthly_usd]), fact_annual[year] = y)
+		formatString: $#,0.00
+
+	measure 'ARPU (Y) Change' = VAR y = [Sel Year] VAR cur = CALCULATE(SUM(fact_annual[arpu_monthly_usd]), fact_annual[year] = y) VAR prev = CALCULATE(SUM(fact_annual[arpu_monthly_usd]), fact_annual[year] = y - 1) VAR d = cur - prev RETURN IF(ISBLANK(cur), "Not reported for " & y, IF(ISBLANK(prev), "First year in the data", IF(d >= 0, "▲ ", "▼ ") & FORMAT(d, "+$0.00;-$0.00") & " vs " & (y - 1)))
+
+	measure 'Ad Revenue per Ad MAU (Y)' = VAR y = [Sel Year] RETURN CALCULATE(SUM(fact_annual[ad_rev_per_ad_mau_usd]), fact_annual[year] = y)
+		formatString: $#,0.00
+
+	measure 'Ad Revenue per Ad MAU (Y) Change' = VAR y = [Sel Year] VAR cur = CALCULATE(SUM(fact_annual[ad_rev_per_ad_mau_usd]), fact_annual[year] = y) VAR prev = CALCULATE(SUM(fact_annual[ad_rev_per_ad_mau_usd]), fact_annual[year] = y - 1) VAR d = cur - prev RETURN IF(ISBLANK(cur), "Not reported for " & y, IF(ISBLANK(prev), "First year in the data", IF(d >= 0, "▲ ", "▼ ") & FORMAT(d, "+$0.00;-$0.00") & " vs " & (y - 1)))
+
+	measure 'Revenue per MAU (Y)' = VAR y = [Sel Year] RETURN CALCULATE(SUM(fact_annual[rev_per_mau_usd]), fact_annual[year] = y)
+		formatString: $#,0.00
+
+	measure 'Revenue per MAU (Y) Change' = VAR y = [Sel Year] VAR cur = CALCULATE(SUM(fact_annual[rev_per_mau_usd]), fact_annual[year] = y) VAR prev = CALCULATE(SUM(fact_annual[rev_per_mau_usd]), fact_annual[year] = y - 1) VAR d = cur - prev RETURN IF(ISBLANK(cur), "Not reported for " & y, IF(ISBLANK(prev), "First year in the data", IF(d >= 0, "▲ ", "▼ ") & FORMAT(d, "+$0.00;-$0.00") & " vs " & (y - 1)))
+
+	measure 'Gross Margin (Y)' = VAR y = [Sel Year] RETURN CALCULATE(SUM(fact_annual[gross_margin]), fact_annual[year] = y)
+		formatString: 0.0%
+
+	measure 'Gross Margin (Y) Change' = VAR y = [Sel Year] VAR cur = CALCULATE(SUM(fact_annual[gross_margin]), fact_annual[year] = y) VAR prev = CALCULATE(SUM(fact_annual[gross_margin]), fact_annual[year] = y - 1) VAR d = cur - prev RETURN IF(ISBLANK(cur), "Not reported for " & y, IF(ISBLANK(prev), "First year in the data", IF(d >= 0, "▲ ", "▼ ") & FORMAT(d * 100, "+0.0;-0.0") & "pp" & " vs " & (y - 1)))
+
+	measure 'Operating Income (Y)' = VAR y = [Sel Year] RETURN CALCULATE(SUM(fact_annual[op_income_usd_m]), fact_annual[year] = y)
+		formatString: $#,0"M"
+
+	measure 'Operating Income (Y) Change' = VAR y = [Sel Year] VAR cur = CALCULATE(SUM(fact_annual[op_income_usd_m]), fact_annual[year] = y) VAR prev = CALCULATE(SUM(fact_annual[op_income_usd_m]), fact_annual[year] = y - 1) VAR d = cur - prev RETURN IF(ISBLANK(cur), "Not reported for " & y, IF(ISBLANK(prev), "First year in the data", IF(d >= 0, "▲ ", "▼ ") & FORMAT(d, "+$#,0;-$#,0") & "M" & " vs " & (y - 1)))
+
+	measure 'Operating Margin (Y)' = VAR y = [Sel Year] RETURN CALCULATE(SUM(fact_annual[op_margin]), fact_annual[year] = y)
+		formatString: 0.0%
+
+	measure 'Operating Margin (Y) Change' = VAR y = [Sel Year] VAR cur = CALCULATE(SUM(fact_annual[op_margin]), fact_annual[year] = y) VAR prev = CALCULATE(SUM(fact_annual[op_margin]), fact_annual[year] = y - 1) VAR d = cur - prev RETURN IF(ISBLANK(cur), "Not reported for " & y, IF(ISBLANK(prev), "First year in the data", IF(d >= 0, "▲ ", "▼ ") & FORMAT(d * 100, "+0.0;-0.0") & "pp" & " vs " & (y - 1)))
+
+	measure 'Free Cash Flow (Y)' = VAR y = [Sel Year] RETURN CALCULATE(SUM(fact_annual[fcf_usd_m]), fact_annual[year] = y)
+		formatString: $#,0"M"
+
+	measure 'Free Cash Flow (Y) Change' = VAR y = [Sel Year] VAR cur = CALCULATE(SUM(fact_annual[fcf_usd_m]), fact_annual[year] = y) VAR prev = CALCULATE(SUM(fact_annual[fcf_usd_m]), fact_annual[year] = y - 1) VAR d = cur - prev RETURN IF(ISBLANK(cur), "Not reported for " & y, IF(ISBLANK(prev), "First year in the data", IF(d >= 0, "▲ ", "▼ ") & FORMAT(d, "+$#,0;-$#,0") & "M" & " vs " & (y - 1)))
+
+	measure 'Opex Ratio (Y)' = VAR y = [Sel Year] RETURN CALCULATE(SUM(fact_annual[opex_ratio]), fact_annual[year] = y)
+		formatString: 0.0%
+
+	measure 'Opex Ratio (Y) Change' = VAR y = [Sel Year] VAR cur = CALCULATE(SUM(fact_annual[opex_ratio]), fact_annual[year] = y) VAR prev = CALCULATE(SUM(fact_annual[opex_ratio]), fact_annual[year] = y - 1) VAR d = cur - prev RETURN IF(ISBLANK(cur), "Not reported for " & y, IF(ISBLANK(prev), "First year in the data", IF(d >= 0, "▲ ", "▼ ") & FORMAT(d * 100, "+0.0;-0.0") & "pp" & " vs " & (y - 1)))
+
+	measure 'LTV (Y)' = VAR y = [Sel Year] RETURN CALCULATE(SUM(ue_by_year[ltv_usd]), ue_by_year[year] = y)
+		formatString: $#,0.00
+
+	measure 'LTV (Y) Change' = VAR y = [Sel Year] VAR cur = CALCULATE(SUM(ue_by_year[ltv_usd]), ue_by_year[year] = y) VAR prev = CALCULATE(SUM(ue_by_year[ltv_usd]), ue_by_year[year] = y - 1) VAR d = cur - prev RETURN IF(ISBLANK(cur), "Not reported for " & y, IF(ISBLANK(prev), "First year in the data", IF(d >= 0, "▲ ", "▼ ") & FORMAT(d, "+$0.00;-$0.00") & " vs " & (y - 1)))
+
+	measure 'CAC Realistic (Y)' = VAR y = [Sel Year] RETURN CALCULATE(SUM(ue_by_year[cac_gross_usd]), ue_by_year[year] = y)
+		formatString: $#,0.00
+
+	measure 'CAC Realistic (Y) Change' = VAR y = [Sel Year] VAR cur = CALCULATE(SUM(ue_by_year[cac_gross_usd]), ue_by_year[year] = y) VAR prev = CALCULATE(SUM(ue_by_year[cac_gross_usd]), ue_by_year[year] = y - 1) VAR d = cur - prev RETURN IF(ISBLANK(cur), "Not reported for " & y, IF(ISBLANK(prev), "First year in the data", IF(d >= 0, "▲ ", "▼ ") & FORMAT(d, "+$0.00;-$0.00") & " vs " & (y - 1)))
+
+	measure 'CAC Simple (Y)' = VAR y = [Sel Year] RETURN CALCULATE(SUM(ue_by_year[cac_net_usd]), ue_by_year[year] = y)
+		formatString: $#,0.00
+
+	measure 'CAC Simple (Y) Change' = VAR y = [Sel Year] VAR cur = CALCULATE(SUM(ue_by_year[cac_net_usd]), ue_by_year[year] = y) VAR prev = CALCULATE(SUM(ue_by_year[cac_net_usd]), ue_by_year[year] = y - 1) VAR d = cur - prev RETURN IF(ISBLANK(cur), "Not reported for " & y, IF(ISBLANK(prev), "First year in the data", IF(d >= 0, "▲ ", "▼ ") & FORMAT(d, "+$0.00;-$0.00") & " vs " & (y - 1)))
+
+	measure 'LTV:CAC (Y)' = VAR y = [Sel Year] RETURN CALCULATE(SUM(ue_by_year[ltv_cac_gross]), ue_by_year[year] = y)
+		formatString: 0.0"x"
+
+	measure 'LTV:CAC (Y) Change' = VAR y = [Sel Year] VAR cur = CALCULATE(SUM(ue_by_year[ltv_cac_gross]), ue_by_year[year] = y) VAR prev = CALCULATE(SUM(ue_by_year[ltv_cac_gross]), ue_by_year[year] = y - 1) VAR d = cur - prev RETURN IF(ISBLANK(cur), "Not reported for " & y, IF(ISBLANK(prev), "First year in the data", IF(d >= 0, "▲ ", "▼ ") & FORMAT(d, "+0.0;-0.0") & "x" & " vs " & (y - 1)))
+
+	measure 'Payback (Y)' = VAR y = [Sel Year] RETURN CALCULATE(SUM(ue_by_year[payback_gross]), ue_by_year[year] = y)
+		formatString: 0.0" mo"
+
+	measure 'Payback (Y) Change' = VAR y = [Sel Year] VAR cur = CALCULATE(SUM(ue_by_year[payback_gross]), ue_by_year[year] = y) VAR prev = CALCULATE(SUM(ue_by_year[payback_gross]), ue_by_year[year] = y - 1) VAR d = cur - prev RETURN IF(ISBLANK(cur), "Not reported for " & y, IF(ISBLANK(prev), "First year in the data", IF(d >= 0, "▲ ", "▼ ") & FORMAT(d, "+0.0;-0.0") & " mo" & " vs " & (y - 1)))
+
+	measure 'Year Title' = "Key numbers for " & [Sel Year]
+
+	measure 'Premium Revenue $M' = SUM(fact_annual[premium_rev_usd_m])
+		formatString: $#,0"M"
+
+	measure 'Ad Revenue $M' = SUM(fact_annual[ad_rev_usd_m])
+		formatString: $#,0"M"
+
+	measure 'Total Revenue $M' = SUM(fact_annual[total_rev_usd_m])
+		formatString: $#,0"M"
+
+	measure 'Gross Margin %' = AVERAGE(fact_annual[gross_margin])
+		formatString: 0.0%
+
+	measure 'Operating Margin %' = AVERAGE(fact_annual[op_margin])
+		formatString: 0.0%
+
+	measure 'Cash Margin %' = AVERAGE(fact_annual[fcf_margin])
+		formatString: 0.0%
+
+	measure 'Opex Ratio %' = AVERAGE(fact_annual[opex_ratio])
+		formatString: 0.0%
+
+	measure 'S&M % of Revenue' = AVERAGE(fact_annual[sm_pct_rev])
+		formatString: 0.0%
+
+	measure 'Premium Mix %' = AVERAGE(fact_annual[premium_mix])
+		formatString: 0.0%
+
+	measure 'Premium Revenue Growth %' = AVERAGE(fact_annual[premium_rev_growth])
+		formatString: 0.0%
+
+	measure 'Ad Revenue Growth %' = AVERAGE(fact_annual[ad_rev_growth])
+		formatString: 0.0%
+
+	measure 'Total Revenue Growth %' = AVERAGE(fact_annual[rev_growth])
+		formatString: 0.0%
+
+	measure 'Subscriber Growth %' = AVERAGE(fact_annual[premium_sub_growth])
+		formatString: 0.0%
+
+	measure 'MAU M' = SUM(fact_annual[mau_m])
+		formatString: #,0"M"
+
+	measure 'Ad MAU M' = SUM(fact_annual[ad_mau_m])
+		formatString: #,0"M"
+
+	measure 'Premium Subscribers M' = SUM(fact_annual[premium_subs_m])
+		formatString: #,0"M"
+
+	measure 'Net Adds M' = SUM(fact_annual[premium_net_adds_m])
+		formatString: #,0"M"
+
+	measure 'Paying Share %' = AVERAGE(fact_annual[paying_share])
+		formatString: 0.0%
+
+	measure 'ARPU $' = AVERAGE(fact_annual[arpu_monthly_usd])
+		formatString: $#,0.00
+
+	measure 'Ad Revenue per Ad MAU $' = AVERAGE(fact_annual[ad_rev_per_ad_mau_usd])
+		formatString: $#,0.00
+
+	measure 'Operating Income $M' = SUM(fact_annual[op_income_usd_m])
+		formatString: $#,0"M"
+
+	measure 'Free Cash Flow $M' = SUM(fact_annual[fcf_usd_m])
+		formatString: $#,0"M"
+
+	measure 'Q Premium Revenue $M' = SUM(fact_quarterly[premium_rev_usd_m])
+		formatString: $#,0"M"
+
+	measure 'Q Ad Revenue $M' = SUM(fact_quarterly[ad_rev_usd_m])
+		formatString: $#,0"M"
+
+	measure 'Q Total Revenue $M' = SUM(fact_quarterly[total_rev_usd_m])
+		formatString: $#,0"M"
+
+	measure 'Q Gross Margin %' = AVERAGE(fact_quarterly[gross_margin])
+		formatString: 0.0%
+
+	measure 'Q Operating Margin %' = AVERAGE(fact_quarterly[op_margin])
+		formatString: 0.0%
+
+	measure 'Q Net Adds M' = SUM(fact_quarterly[premium_net_adds_m])
+		formatString: #,0"M"
+
+	measure 'Q ARPU $' = AVERAGE(fact_quarterly[arpu_monthly_usd])
+		formatString: $#,0.00
+
+	measure 'CAC Simple $' = AVERAGE(ue_by_year[cac_net_usd])
+		formatString: $#,0.00
+
+	measure 'CAC Realistic $' = AVERAGE(ue_by_year[cac_gross_usd])
+		formatString: $#,0.00
+
+	measure 'Payback Simple (mo)' = AVERAGE(ue_by_year[payback_net])
+		formatString: 0.0" mo"
+
+	measure 'Payback Realistic (mo)' = AVERAGE(ue_by_year[payback_gross])
+		formatString: 0.0" mo"
+
+	measure 'LTV at 3% churn $' = AVERAGE(ue_by_year[ltv_usd])
+		formatString: $#,0.00
+
+	measure 'LTV:CAC Simple' = AVERAGE(ue_by_year[ltv_cac_net])
+		formatString: 0.0"x"
+
+	measure 'LTV:CAC Realistic' = AVERAGE(ue_by_year[ltv_cac_gross])
+		formatString: 0.0"x"
+
+	measure 'WI Churn' = SELECTEDVALUE(p_churn[churn], 0.03)
+		formatString: 0.00%
+
+	measure 'WI ARPU Change' = SELECTEDVALUE(p_arpu[arpu_change], 0)
+		formatString: +0%;-0%;0%
+
+	measure 'WI GM Change' = SELECTEDVALUE(p_gm[gm_change], 0)
+		formatString: +0.0%;-0.0%;0.0%
+
+	measure 'WI S&M Change' = SELECTEDVALUE(p_sm[sm_change], 0)
+		formatString: +0%;-0%;0%
+
+	measure 'WI Net Adds Change' = SELECTEDVALUE(p_na[na_change], 0)
+		formatString: +0%;-0%;0%
+
+	measure 'WI Proxy' = SELECTEDVALUE(p_proxy[proxy], "Realistic (gross adds)")
+
+	measure 'WI Base Year' = SELECTEDVALUE(base_inputs[year], 2025)
+		formatString: 0
+
+	measure 'Base ARPU' = VAR y = [WI Base Year] RETURN CALCULATE(MAX(base_inputs[arpu_usd]), base_inputs[year] = y)
+		formatString: $#,0.00
+
+	measure 'Base Gross Margin' = VAR y = [WI Base Year] RETURN CALCULATE(MAX(base_inputs[gross_margin]), base_inputs[year] = y)
+		formatString: 0.0%
+
+	measure 'Base S&M' = VAR y = [WI Base Year] RETURN CALCULATE(MAX(base_inputs[sm_usd_m]), base_inputs[year] = y)
+		formatString: $#,0"M"
+
+	measure 'Base Net Adds' = VAR y = [WI Base Year] RETURN CALCULATE(MAX(base_inputs[net_adds_m]), base_inputs[year] = y)
+		formatString: #,0.0"M"
+
+	measure 'Base Avg Subscribers' = VAR y = [WI Base Year] RETURN CALCULATE(MAX(base_inputs[avg_subs_m]), base_inputs[year] = y)
+		formatString: #,0.0"M"
+
+	measure 'WI ARPU' = [Base ARPU] * (1 + [WI ARPU Change])
+		formatString: $#,0.00
+
+	measure 'WI Gross Margin' = [Base Gross Margin] + [WI GM Change]
+		formatString: 0.0%
+
+	measure 'WI S&M' = [Base S&M] * (1 + [WI S&M Change])
+		formatString: $#,0"M"
+
+	measure 'WI Net Adds' = [Base Net Adds] * (1 + [WI Net Adds Change])
+		formatString: #,0.0"M"
+
+	measure 'WI Avg Subscribers' = [Base Avg Subscribers] - [Base Net Adds] / 2 + [WI Net Adds] / 2
+		formatString: #,0.0"M"
+
+	measure 'WI Monthly Gross Profit' = [WI ARPU] * [WI Gross Margin]
+		formatString: $#,0.00
+
+	measure 'WI Average Stay' = DIVIDE(1, [WI Churn])
+		formatString: 0.0" mo"
+
+	measure 'WI LTV' = DIVIDE([WI Monthly Gross Profit], [WI Churn])
+		formatString: $#,0.00
+
+	measure 'WI CAC Simple' = DIVIDE([WI S&M], [WI Net Adds])
+		formatString: $#,0.00
+
+	measure 'WI CAC Realistic' = DIVIDE([WI S&M], [WI Net Adds] + [WI Avg Subscribers] * [WI Churn] * 12)
+		formatString: $#,0.00
+
+	measure 'WI CAC' = IF([WI Proxy] = "Simple (net adds)", [WI CAC Simple], [WI CAC Realistic])
+		formatString: $#,0.00
+
+	measure 'WI LTV:CAC' = DIVIDE([WI LTV], [WI CAC])
+		formatString: 0.0"x"
+
+	measure 'WI Payback' = DIVIDE([WI CAC], [WI Monthly Gross Profit])
+		formatString: 0.0" mo"
+
+	measure 'WI Status' = IF([WI LTV:CAC] >= 3, "Healthy (3x or more)", "Weak (below 3x)")
+
+	measure 'WI Recovered' = IF([WI Payback] < [WI Average Stay], "Cost earned back in time", "Cost NOT earned back")
+
+	measure 'Curve LTV' = DIVIDE([WI Monthly Gross Profit], SELECTEDVALUE(churn_curve[churn]))
+		formatString: $#,0.00
+
+	measure 'Curve CAC Simple' = IF(NOT ISBLANK(SELECTEDVALUE(churn_curve[churn])), [WI CAC Simple])
+		formatString: $#,0.00
+
+	measure 'Curve CAC Realistic' = VAR c = SELECTEDVALUE(churn_curve[churn]) RETURN IF(NOT ISBLANK(c), DIVIDE([WI S&M], [WI Net Adds] + [WI Avg Subscribers] * c * 12))
+		formatString: $#,0.00
+
+	measure 'Retained per 1,000' = VAR c = SELECTEDVALUE(grid_churn[churn]) VAR m = SELECTEDVALUE(grid_month[month]) RETURN IF(NOT ISBLANK(c) && NOT ISBLANK(m), 1000 * POWER(1 - c, m))
+		formatString: #,0
+
+	measure 'Retained at Selected Churn' = VAR m = SELECTEDVALUE(grid_month[month]) RETURN IF(NOT ISBLANK(m), 1000 * POWER(1 - [WI Churn], m))
+		formatString: #,0
+
+	measure 'Cumulative Profit per Subscriber' = VAR m = SELECTEDVALUE(grid_month[month]) VAR c = [WI Churn] RETURN IF(NOT ISBLANK(m), [WI Monthly Gross Profit] * (1 - c) * (1 - POWER(1 - c, m)) / c)
+		formatString: $#,0.00
+
+	measure 'Sensitivity LTV:CAC' = VAR c = SELECTEDVALUE(grid_churn[churn]) VAR g = SELECTEDVALUE(grid_gm[gm_change]) VAR ltv = DIVIDE([WI ARPU] * ([Base Gross Margin] + g), c) VAR cac = IF([WI Proxy] = "Simple (net adds)", [WI CAC Simple], DIVIDE([WI S&M], [WI Net Adds] + [WI Avg Subscribers] * c * 12)) RETURN IF(NOT ISBLANK(c) && NOT ISBLANK(g), DIVIDE(ltv, cac))
+		formatString: 0.00"x"
+
+	measure 'MC Runs' = COUNTROWS(mc_runs)
+		formatString: #,0
+
+	measure 'MC Runs 3x or Better' = CALCULATE(COUNTROWS(mc_runs), mc_runs[ltv_cac] >= 3)
+		formatString: #,0
+
+	measure 'MC Runs Below 3x' = CALCULATE(COUNTROWS(mc_runs), mc_runs[ltv_cac] < 3)
+		formatString: #,0
+
+	measure 'MC Chance 3x' = DIVIDE([MC Runs 3x or Better], [MC Runs])
+		formatString: 0%
+
+	measure 'MC P10 LTV:CAC' = PERCENTILE.INC(mc_runs[ltv_cac], 0.10)
+		formatString: 0.0"x"
+
+	measure 'MC P50 LTV:CAC' = MEDIAN(mc_runs[ltv_cac])
+		formatString: 0.0"x"
+
+	measure 'MC P90 LTV:CAC' = PERCENTILE.INC(mc_runs[ltv_cac], 0.90)
+		formatString: 0.0"x"
+
+	measure 'MC Range Text' = FORMAT([MC P10 LTV:CAC], "0.0") & "x – " & FORMAT([MC P90 LTV:CAC], "0.0") & "x (P10–P90)"
+
+	measure 'MC P50 LTV' = MEDIAN(mc_runs[ltv_usd])
+		formatString: $#,0.00
+
+	measure 'MC P50 CAC' = MEDIAN(mc_runs[cac_usd])
+		formatString: $#,0.00
+
+	measure 'MC Payback in Time' = DIVIDE(COUNTROWS(FILTER(mc_runs, mc_runs[payback_months] < DIVIDE(1, mc_runs[churn]))), [MC Runs])
+		formatString: 0%
+
+	measure 'MC Positive Effect' = VAR v = SUM(mc_drivers[correlation]) RETURN IF(v >= 0, v)
+		formatString: +0.00;-0.00;0.00
+
+	measure 'MC Negative Effect' = VAR v = SUM(mc_drivers[correlation]) RETURN IF(v < 0, v)
+		formatString: +0.00;-0.00;0.00
+
+	measure Disclaimer = "Churn is a hypothetical assumption and CAC figures are proxies (all sales & marketing spend / subscribers added). Spotify does not disclose either."
+
+	column '_'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: _
+
+	partition _measures = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "_measures.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"_", type text}}, "en-US")
+				in
+				    Typed

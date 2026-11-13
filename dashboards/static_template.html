@@ -1,0 +1,836 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spotify Unit Economics</title>
+<meta name="description" content="Interactive Spotify unit economics dashboard (FY2021-FY2025, US dollars): revenue, subscribers, ARPU, profitability, CAC, LTV, retention, sensitivity and Monte Carlo.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+<style>
+:root {
+  --green: #1db954; --green-dark: #148a3e; --black: #121212; --grey: #9e9e9e;
+  --ink: #14171c; --ink-2: #4b5058; --ink-3: #8a8f98; --border: #e8e8e8; --page: #f7f7f7; --card: #ffffff;
+  --soft: #effaf3;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font-family: 'Plus Jakarta Sans', Inter, 'Segoe UI', sans-serif; background: var(--page); color: var(--ink);
+  -webkit-font-smoothing: antialiased; }
+a { color: inherit; }
+.app { display: flex; min-height: 100vh; }
+
+/* sidebar */
+.side { width: 264px; flex-shrink: 0; color: #e8eaed; position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  background: linear-gradient(180deg, #050505 0%, #06120b 55%, #0b2415 100%); }
+.brand { display: flex; align-items: center; gap: 12px; padding: 24px 22px 12px; }
+.logo { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, var(--green), var(--green-dark)); box-shadow: 0 8px 24px rgba(29,185,84,.45); }
+.brand b { font-size: 22px; letter-spacing: -.02em; display: block; line-height: 1.05; }
+.brand small { font-size: 11.5px; color: #8fa397; }
+.badge { margin: 4px 16px 16px; padding: 10px 12px; border-radius: 12px; text-align: center; color: #04110a;
+  background: linear-gradient(120deg, var(--green), #7ee2a8); box-shadow: 0 8px 26px rgba(29,185,84,.4); }
+.badge b { display: block; font-size: 14px; letter-spacing: .14em; }
+.badge span { font-size: 10.5px; font-weight: 600; color: #0b3a1d; }
+.nav a { display: flex; align-items: center; gap: 12px; padding: 10px 14px; margin: 3px 12px; border-radius: 12px;
+  color: #b9c4bd; text-decoration: none; font-size: 14px; font-weight: 600; border: 1px solid transparent;
+  transition: background .15s, color .15s; }
+.nav a:hover { background: rgba(255,255,255,.06); color: #fff; }
+.nav a.on { color: #fff; background: linear-gradient(90deg, rgba(29,185,84,.30), rgba(29,185,84,.08));
+  border-color: rgba(29,185,84,.4); box-shadow: 0 8px 24px rgba(29,185,84,.18); }
+.nav svg { width: 18px; height: 18px; flex-shrink: 0; }
+.quick { margin: 18px 14px 20px; padding: 16px; border-radius: 16px; background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08); font-size: 13px; }
+.quick h4 { margin: 0 0 4px; color: #fff; font-size: 15px; }
+.quick p { margin: 0 0 10px; color: #a9b4ad; font-size: 12px; line-height: 1.5; }
+.quick .row2 { display: flex; justify-content: space-between; color: #d6ded9; margin-top: 4px; }
+.verdict { margin-top: 10px; text-align: center; border-radius: 999px; padding: 6px 0; font-weight: 700; font-size: 12.5px; }
+.verdict.good { color: #04110a; background: linear-gradient(90deg, var(--green), #7ee2a8); }
+.verdict.bad { color: #fff; background: linear-gradient(90deg, #3a3a3a, #555); }
+
+/* top bar */
+.main { flex: 1; min-width: 0; }
+.top { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between;
+  gap: 12px; flex-wrap: wrap; padding: 14px 32px; color: #fff;
+  background: linear-gradient(100deg, #050505 0%, #07160d 45%, #0d2c19 75%, #14532d 100%); box-shadow: 0 10px 30px rgba(0,0,0,.18); }
+.top h1 { margin: 0; font-size: 28px; letter-spacing: -.02em; }
+.top .left { display: flex; align-items: center; gap: 14px; }
+.burger { display: none; width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255,255,255,.2);
+  background: transparent; color: #fff; font-size: 18px; cursor: pointer; }
+.filters { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.16); border-radius: 12px; padding: 6px 10px; font-size: 12.5px; }
+.filters b { color: #7ee2a8; }
+.filters select { font: inherit; border-radius: 8px; border: 1px solid rgba(255,255,255,.25); background: #0e1a13;
+  color: #fff; padding: 5px 8px; }
+.content { padding: 22px 32px 32px; max-width: 1480px; }
+.source { font-size: 12px; color: var(--ink-3); margin-top: 10px; }
+
+/* building blocks */
+.explain { background: #fff; border: 1px solid var(--border); border-left: 5px solid var(--green); border-radius: 14px;
+  padding: 14px 18px; margin-bottom: 16px; }
+.explain .k { font-size: 11px; font-weight: 800; letter-spacing: .08em; color: var(--green-dark); text-transform: uppercase; }
+.explain .h { font-size: 15.5px; font-weight: 600; margin: 4px 0; }
+.explain .r { font-size: 13px; color: var(--ink-2); }
+.grid { display: grid; gap: 14px; margin-bottom: 16px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 14px 16px;
+  box-shadow: 0 1px 2px rgba(16,24,40,.04), 0 4px 16px rgba(16,24,40,.05); min-width: 0; }
+.card .l { font-size: 11.5px; font-weight: 700; color: var(--ink-3); text-transform: uppercase; letter-spacing: .05em; }
+.card .v { font-size: 25px; font-weight: 700; margin-top: 6px; letter-spacing: -.02em; }
+.pill { display: inline-block; margin-top: 6px; font-size: 11.5px; font-weight: 600; padding: 3px 8px; border-radius: 999px;
+  background: #f0f1f4; color: var(--ink-2); }
+.pill.up { background: #e8f7ee; color: var(--green-dark); }
+.pill.down { background: var(--black); color: #fff; }
+.row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+.row > * { flex: 1 1 420px; min-width: 0; }
+.panel { background: #fff; border: 1px solid var(--border); border-radius: 18px; padding: 12px;
+  box-shadow: 0 1px 2px rgba(16,24,40,.04), 0 4px 16px rgba(16,24,40,.05); }
+.panel h3 { margin: 6px 8px 10px; font-size: 15px; }
+.chart { width: 100%; height: 360px; }
+.note { font-size: 12px; color: var(--ink-3); line-height: 1.5; padding: 4px 10px 6px; }
+.callout { border-radius: 12px; padding: 14px 16px; font-size: 13px; line-height: 1.55; border-left: 4px solid var(--green);
+  background: var(--soft); color: var(--ink-2); flex: 1 1 280px; }
+.callout b { display: block; color: var(--ink); margin-bottom: 4px; }
+.callout.warn { background: #f2f2f2; border-color: var(--black); }
+.section { margin: 26px 0 14px; }
+.section h2 { margin: 0; font-size: 21px; }
+.section p { margin: 2px 0 0; font-size: 13.5px; color: #6b7079; }
+table.t { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.t th { text-align: right; font-size: 12px; padding: 9px 12px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+table.t td { text-align: right; padding: 9px 12px; border-bottom: 1px solid var(--border); }
+table.t th:first-child, table.t td:first-child { text-align: left; font-weight: 600; }
+table.t.wrap td { white-space: normal; }
+.tablewrap { overflow-x: auto; }
+.heat { border-collapse: collapse; width: 100%; font-size: 13px; }
+.heat th { position: sticky; top: 0; background: #fff; font-size: 12px; padding: 10px; border-bottom: 1px solid var(--border); }
+.heat td { padding: 9px 10px; text-align: center; white-space: nowrap; }
+.heat td:first-child { text-align: left; font-weight: 700; background: #fff; border-bottom: 1px solid var(--border); }
+.heat tr.sel td { font-weight: 800; }
+.heat td.mark { box-shadow: inset 0 0 0 2px #14171c; font-weight: 800; }
+.toolbar { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; padding: 4px 4px 12px; }
+select.s { font: inherit; font-size: 13px; border: 1px solid #e9ebef; border-radius: 8px; padding: 7px 10px; background: #fff; }
+.legend { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--ink-3); padding: 10px 4px 2px; }
+.legend i { width: 160px; height: 10px; border-radius: 5px; display: inline-block; }
+
+/* controls */
+.ctl { margin-bottom: 16px; }
+.ctl .lab { display: flex; justify-content: space-between; font-size: 14px; font-weight: 700; }
+.ctl .lab span { color: var(--green-dark); }
+.ctl .help { font-size: 12px; color: var(--ink-3); margin: 2px 0 6px; }
+input[type=range] { width: 100%; accent-color: var(--green); }
+.side input[type=range] { accent-color: var(--green); }
+.split { display: flex; gap: 18px; flex-wrap: wrap; align-items: flex-start; }
+.split > .controls { flex: 0 0 320px; }
+.split > .out { flex: 1 1 600px; min-width: 0; }
+.btn { font: inherit; font-weight: 700; font-size: 13px; border-radius: 999px; padding: 9px 16px; cursor: pointer;
+  border: 1px solid var(--border); background: #fff; }
+.assume { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+.assume .card p { font-size: 13px; color: #55595f; line-height: 1.55; margin: 8px 0 0; }
+.assume .card p b { color: var(--black); }
+
+/* hero */
+.hero { display: flex; gap: 26px; align-items: center; flex-wrap: wrap; border-radius: 22px; padding: 28px 34px; color: #fff;
+  background: radial-gradient(circle at 85% 15%, rgba(29,185,84,.40) 0%, rgba(29,185,84,0) 42%),
+              radial-gradient(circle at 10% 110%, rgba(29,185,84,.22) 0%, rgba(29,185,84,0) 40%),
+              linear-gradient(130deg, #050505 0%, #0a1d12 50%, #14532d 100%);
+  box-shadow: 0 24px 60px rgba(5,20,12,.28); }
+.hero .txt { flex: 1 1 480px; min-width: 0; }
+.hero .tag { display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: .16em; border-radius: 999px;
+  padding: 6px 14px; border: 1px solid rgba(255,255,255,.22); background: rgba(255,255,255,.05); }
+.hero h2 { font-size: 28px; line-height: 1.2; letter-spacing: -.025em; margin: 14px 0 10px; }
+.hero h2 em { font-style: normal; background: linear-gradient(90deg, var(--green), #9ff0c0); -webkit-background-clip: text;
+  background-clip: text; color: transparent; }
+.hero p { font-size: 14.5px; color: #cfdad3; line-height: 1.55; max-width: 640px; margin: 0; }
+.hero .ctas { display: flex; gap: 12px; margin-top: 20px; flex-wrap: wrap; }
+.hero .ctas a { border-radius: 999px; padding: 10px 20px; font-size: 13.5px; font-weight: 700; text-decoration: none; }
+.hero .ctas a.w { background: #fff; color: var(--black); }
+.hero .ctas a.o { color: #fff; border: 1px solid rgba(255,255,255,.35); background: rgba(255,255,255,.05); }
+.floats { display: flex; flex-direction: column; }
+.f1 { width: 180px; border-radius: 16px; padding: 14px 18px; border: 1px solid rgba(255,255,255,.22);
+  background: linear-gradient(145deg, rgba(29,185,84,.55), rgba(20,83,45,.85)); box-shadow: 0 20px 40px rgba(0,0,0,.35); }
+.f2 { width: 170px; border-radius: 16px; padding: 14px 18px; background: #fff; color: var(--black); margin: 10px 0 0 50px;
+  box-shadow: 0 24px 48px rgba(0,0,0,.35); }
+.f1 small, .f2 small { font-size: 12.5px; color: #cfe9d9; }
+.f2 small { color: #6b7079; }
+.f1 b, .f2 b { display: block; font-size: 26px; margin: 4px 0; }
+.f2 b { color: var(--green-dark); }
+.steps { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.step { display: flex; gap: 14px; }
+.step .n { width: 40px; height: 40px; flex-shrink: 0; border-radius: 50%; background: var(--soft); color: var(--green-dark);
+  font-weight: 800; display: flex; align-items: center; justify-content: center; }
+.step h4 { margin: 4px 0 6px; font-size: 16px; }
+.step p { margin: 0; font-size: 13.5px; color: #55595f; line-height: 1.55; }
+
+@media (max-width: 900px) {
+  .side { position: fixed; left: -280px; z-index: 30; transition: left .2s; }
+  .side.open { left: 0; box-shadow: 0 0 40px rgba(0,0,0,.5); }
+  .burger { display: inline-block; }
+  .top { padding: 12px 16px; } .top h1 { font-size: 20px; }
+  .content { padding: 16px; }
+  .split > .controls { flex: 1 1 100%; }
+  .f2 { margin-left: 0; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="side" id="side">
+    <div class="brand">
+      <div class="logo"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
+      <div><b>Spotify</b><small>Financial Analysis</small></div>
+    </div>
+    <div class="badge"><b>UNIT ECONOMICS</b><span>LTV · CAC · ARPU · Churn · Payback</span></div>
+    <nav class="nav" id="nav"></nav>
+    <div class="quick">
+      <h4>Churn Scenario</h4>
+      <p>Adjust the monthly churn rate. LTV, CAC payback and LTV:CAC update live.</p>
+      <div class="row2"><span>Monthly churn</span><b id="q-churn"></b></div>
+      <input type="range" id="side-churn" min="1" max="8" step="0.5">
+      <div id="q-out"></div>
+    </div>
+  </aside>
+  <div class="main">
+    <header class="top">
+      <div class="left"><button class="burger" id="burger" aria-label="Menu">☰</button><h1 id="title"></h1></div>
+      <div class="filters"><b>USD $</b><span>Year</span>
+        <select id="year"><option value="all">All years (2021–2025)</option></select></div>
+    </header>
+    <main class="content">
+      <div id="view"></div>
+      <div class="source" id="source"></div>
+    </main>
+  </div>
+</div>
+<script>
+const DATA = __DATA__;
+const C = { green: '#1db954', greenDark: '#148a3e', black: '#121212', grey: '#9e9e9e', ink2: '#52514e' };
+const FONT = "'Plus Jakarta Sans', Inter, 'Segoe UI', sans-serif";
+const A = DATA.annual, Q = DATA.quarterly, UE = DATA.ue_by_year;
+const YEARS = A.map(r => r.year);
+const BASE = Object.fromEntries(DATA.base_inputs.map(r => [r.year, r]));
+const DEFAULTS = { churn: 3, arpu: 0, gm: 0, sm: 0, na: 0, proxy: 'gross', baseYear: DATA.default_base_year };
+const MC_DEFAULTS = { lo: 2, hi: 5, arpu: 10, gm: 2, sm: 20, na: 25, runs: 10000 };
+const state = { page: 'overview', year: 'all', ...DEFAULTS, mc: { ...MC_DEFAULTS },
+                rt: { value: 'people', period: 'month' }, sg: { metric: 'ltv', cols: 'gm' } };
+
+// ------------------------------------------------------------------ formatting
+// Every formatter returns 'n/a' for a missing value (e.g. growth in the first year, quarters without net adds).
+const na = v => v == null || !Number.isFinite(v);
+const nf = (v, d = 0) => na(v) ? 'n/a' : v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d });
+const usdB = m => na(m) ? 'n/a' : '$' + nf(m / 1000, 2) + 'B';
+const usdM = (v, signed) => na(v) ? 'n/a' : (v < 0 ? '-' : signed ? '+' : '') + '$' + nf(Math.abs(v)) + 'M';
+const usd2 = v => na(v) ? 'n/a' : '$' + nf(v, 2);
+const pct = (f, d = 1) => na(f) ? 'n/a' : nf(f * 100, d) + '%';
+const x1 = v => na(v) ? 'n/a' : nf(v, 1) + 'x';
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const byYear = (rows, y) => rows.find(r => r.year === y);
+
+// ------------------------------------------------------------------ unit economics (same formulas as the Python model)
+function ue(p = state) {
+  const b = BASE[p.baseYear], churn = p.churn / 100;
+  const netAdds = b.net_adds_m * (1 + p.na / 100);
+  const avgSubs = b.avg_subs_m - b.net_adds_m / 2 + netAdds / 2;
+  const arpu = b.arpu_usd * (1 + p.arpu / 100), gm = b.gross_margin + p.gm / 100, sm = b.sm_usd_m * (1 + p.sm / 100);
+  const gp = arpu * gm, ltv = gp / churn;
+  const cacNet = sm / netAdds, cacGross = sm / (netAdds + avgSubs * churn * 12);
+  const cac = p.proxy === 'net' ? cacNet : cacGross;
+  return { arpu, gm, sm, netAdds, avgSubs, gp, ltv, cacNet, cacGross, cac, ratio: ltv / cac, payback: cac / gp,
+           stay: 1 / churn, ratioNet: ltv / cacNet, ratioGross: ltv / cacGross };
+}
+
+// ------------------------------------------------------------------ chart + html helpers
+function plot(id, traces, layout = {}) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const base = {
+    font: { family: FONT, size: 12, color: '#8a8f98' }, paper_bgcolor: '#fff', plot_bgcolor: '#fff',
+    margin: { l: 56, r: 20, t: 52, b: 44 }, hovermode: 'x unified', bargap: 0.3, barcornerradius: 5,
+    title: { text: layout.titleText || '', x: 0.015, xanchor: 'left', font: { size: 15, color: '#1d2127', family: FONT } },
+    legend: { orientation: 'h', yanchor: 'bottom', y: 1.02, xanchor: 'right', x: 1, font: { color: '#4b5058' } },
+    xaxis: { type: 'category', showgrid: false, linecolor: '#e8e8e8', tickfont: { color: '#6b7079' }, automargin: true },
+    yaxis: { gridcolor: '#f0f1f4', zerolinecolor: '#d4d7dd', tickfont: { color: '#6b7079' }, automargin: true },
+    hoverlabel: { bgcolor: '#1d2127', font: { color: '#fff', family: FONT }, bordercolor: '#1d2127' },
+  };
+  const merged = { ...base, ...layout, xaxis: { ...base.xaxis, ...(layout.xaxis || {}) },
+                   yaxis: { ...base.yaxis, ...(layout.yaxis || {}) }, legend: { ...base.legend, ...(layout.legend || {}) } };
+  delete merged.titleText;
+  if (state.year !== 'all' && merged.xaxis.type === 'category' && traces[0] && traces[0].x) {
+    const hits = traces[0].x.map((v, i) => String(v).includes(String(state.year)) ? i : -1).filter(i => i >= 0);
+    if (hits.length) merged.shapes = [...(merged.shapes || []), { type: 'rect', xref: 'x', yref: 'paper',
+      x0: Math.min(...hits) - 0.5, x1: Math.max(...hits) + 0.5, y0: 0, y1: 1, fillcolor: 'rgba(29,185,84,0.13)',
+      line: { width: 0 }, layer: 'below' }];
+  }
+  Plotly.newPlot(el, traces, merged, { displayModeBar: false, responsive: true });
+}
+const bar = (x, y, name, color, fmt = ',.0f', extra = {}) => ({ type: 'bar', x, y, name, marker: { color },
+  hovertemplate: `%{y:${fmt}}`, ...extra });
+const line = (x, y, name, color, fmt = ',.1f', extra = {}) => ({ type: 'scatter', mode: 'lines+markers', x, y, name,
+  line: { width: 3, shape: 'spline', color }, marker: { size: 8, color, line: { width: 2, color: '#fff' } },
+  hovertemplate: `%{y:${fmt}}`, ...extra });
+const yrs = rows => rows.map(r => String(r.year));
+const col = (rows, k, f = v => v) => rows.map(r => r[k] == null ? null : f(r[k]));
+
+function card(label, value, delta, cls) {
+  return `<div class="card"><div class="l">${esc(label)}</div><div class="v">${value}</div>` +
+         (delta ? `<span class="pill ${cls || ''}">${delta}</span>` : '') + `</div>`;
+}
+const panel = (id, note, h = 360) => `<div class="panel"><div id="${id}" class="chart" style="height:${h}px"></div>` +
+  (note ? `<div class="note">${note}</div>` : '') + `</div>`;
+const explain = (h, r) => `<div class="explain"><div class="k">💡 What this means</div><div class="h">${h}</div>` +
+  `<div class="r"><b>How to read it:</b> ${r}</div></div>`;
+const section = (h, p) => `<div class="section"><h2>${h}</h2>${p ? `<p>${p}</p>` : ''}</div>`;
+function table(headers, rows, cls = '') {
+  return `<div class="tablewrap"><table class="t ${cls}"><thead><tr>${headers.map(h => `<th>${esc(h)}</th>`).join('')}` +
+         `</tr></thead><tbody>${rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+}
+function slider(id, label, min, max, step, value, unit, help) {
+  return `<div class="ctl"><div class="lab">${label}<span id="${id}-v">${value}${unit}</span></div>` +
+         (help ? `<div class="help">${help}</div>` : '') +
+         `<input type="range" id="${id}" min="${min}" max="${max}" step="${step}" value="${value}" data-unit="${unit}"></div>`;
+}
+
+// ------------------------------------------------------------------ year snapshot (shown when one year is picked)
+const KIND = {
+  b: [usdB, d => (d < 0 ? '-' : '+') + '$' + nf(Math.abs(d) / 1000, 2) + 'B'],
+  m: [v => usdM(v), d => usdM(d, true)],
+  pct: [v => pct(v), d => (d >= 0 ? '+' : '') + nf(d * 100, 1) + 'pp'],
+  users: [v => nf(v) + 'M', d => (d >= 0 ? '+' : '') + nf(d) + 'M'],
+  usd2: [usd2, d => (d < 0 ? '-' : '+') + '$' + nf(Math.abs(d), 2)],
+  x: [x1, d => (d >= 0 ? '+' : '') + nf(d, 1) + 'x'],
+  mo: [v => nf(v, 1) + ' mo', d => (d >= 0 ? '+' : '') + nf(d, 1) + ' mo'],
+};
+function snapCard(label, rows, key, kind, better, y) {
+  const cur = byYear(rows, y), prev = byYear(rows, y - 1);
+  if (!cur || cur[key] == null) return card(label, 'n/a', 'not reported this year');
+  const [fv, fd] = KIND[kind];
+  if (!prev || prev[key] == null) return card(label, fv(cur[key]), 'first year in the data');
+  const d = cur[key] - prev[key];
+  const cls = better == null ? '' : ((d >= 0) === better ? 'up' : 'down');
+  return card(label, fv(cur[key]), `${d >= 0 ? '▲' : '▼'} ${fd(d)} vs ${y - 1}`, cls);
+}
+const SNAP = {
+  revenue: [['Total revenue', A, 'total_rev_usd_m', 'b', true], ['Premium revenue', A, 'premium_rev_usd_m', 'b', true],
+            ['Ad revenue', A, 'ad_rev_usd_m', 'b', true], ['Revenue growth', A, 'rev_growth', 'pct', true],
+            ['Share from Premium', A, 'premium_mix', 'pct', null]],
+  subscribers: [['Premium subscribers', A, 'premium_subs_m', 'users', true], ['Monthly active users', A, 'mau_m', 'users', true],
+                ['Free (ad) users', A, 'ad_mau_m', 'users', true], ['New paying subscribers', A, 'premium_net_adds_m', 'users', true],
+                ['Paying share of users', A, 'paying_share', 'pct', true]],
+  arpu: [['Per paying subscriber / month', A, 'arpu_monthly_usd', 'usd2', true],
+         ['Ad money per free user / year', A, 'ad_rev_per_ad_mau_usd', 'usd2', true],
+         ['Revenue per user / year', A, 'rev_per_mau_usd', 'usd2', true]],
+  profitability: [['Gross margin', A, 'gross_margin', 'pct', true], ['Operating income', A, 'op_income_usd_m', 'm', true],
+                  ['Operating margin', A, 'op_margin', 'pct', true], ['Free cash flow', A, 'fcf_usd_m', 'm', true],
+                  ['Costs as % of revenue', A, 'opex_ratio', 'pct', false]],
+  ue: [['Value of a subscriber (LTV)', UE, 'ltv_usd', 'usd2', true], ['Cost to win one (realistic)', UE, 'cac_gross_usd', 'usd2', false],
+       ['LTV:CAC', UE, 'ltv_cac_gross', 'x', true], ['Months to earn back cost', UE, 'payback_gross', 'mo', false]],
+};
+function snapshot(page) {
+  if (state.year === 'all') return '';
+  const y = +state.year;
+  let spec = SNAP[page], sub = 'Pills show the change from the year before.';
+  if (['cac', 'ltv', 'retention', 'sensitivity'].includes(page)) {
+    if (!byYear(UE, y)) return `<div class="row"><div class="callout warn"><b>No marketing data for ${y}.</b>Spotify only ` +
+      `reports sales &amp; marketing spend from ${UE[0].year}, so subscriber value and cost to win start there.</div></div>`;
+    spec = SNAP.ue; sub = 'At the default 3% monthly churn. Charts below use your assumptions.';
+  }
+  if (!spec) return '';
+  return section(`${y} at a glance`, sub) + `<div class="grid">${spec.map(s => snapCard(s[0], s[1], s[2], s[3], s[4], y)).join('')}</div>`;
+}
+
+// ------------------------------------------------------------------ pages
+const ICON = {
+  overview: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>',
+  revenue: '<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
+  subscribers: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  arpu: '<path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/>',
+  profitability: '<line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/>',
+  cac: '<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+  ltv: '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>',
+  retention: '<path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/>',
+  sensitivity: '<line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/>',
+  montecarlo: '<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.2"/><circle cx="15.5" cy="15.5" r="1.2"/><circle cx="15.5" cy="8.5" r="1.2"/><circle cx="8.5" cy="15.5" r="1.2"/><circle cx="12" cy="12" r="1.2"/>',
+  assumptions: '<rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/>',
+  data: '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
+};
+const PAGES = {
+  overview: ['Executive Overview', 'Executive Overview'], revenue: ['Revenue Analysis', 'Revenue Analysis'],
+  subscribers: ['Subscriber Base', 'Subscriber Base'], arpu: ['ARPU', 'ARPU (Average Revenue Per User)'],
+  profitability: ['Profitability & Margins', 'Profitability & Margins'], cac: ['CAC', 'CAC (Customer Acquisition Cost)'],
+  ltv: ['LTV & LTV:CAC', 'LTV (Customer Lifetime Value) & LTV:CAC'], retention: ['Retention & Churn', 'Cohort Retention & Churn'],
+  sensitivity: ['Sensitivity Analysis', 'Sensitivity Analysis'], montecarlo: ['Monte Carlo', 'Monte Carlo Simulation'],
+  assumptions: ['Model Assumptions', 'Model Assumptions'], data: ['Data & Methodology', 'Data & Methodology'],
+};
+
+function pageOverview() {
+  const y = state.year === 'all' ? YEARS[YEARS.length - 1] : +state.year;
+  const a = byYear(A, y), prev = byYear(A, y - 1);
+  const grow = a.rev_growth, growTxt = grow == null ? 'first year in the data' : `${grow >= 0 ? '+' : ''}${pct(grow)} vs last year`;
+  const d = (k, kind, better = true) => {
+    if (!prev) return ['', ''];
+    const v = a[k] - prev[k];
+    return [`${v >= 0 ? '▲' : '▼'} ${KIND[kind][1](v)}`, (v >= 0) === better ? 'up' : 'down'];
+  };
+  const k = (label, key, kind) => { const [t, c] = d(key, kind); return card(label, KIND[kind][0](a[key]), t, c); };
+  const first = A[0], last = A[A.length - 1];
+  const html = `
+    <div class="hero"><div class="txt"><span class="tag">● SPOTIFY UNIT ECONOMICS</span>
+      <h2>See how Spotify turns listeners into profit, <em>year by year.</em></h2>
+      <p>This dashboard uses Spotify's official results (2021–2025) to show where the money comes from, whether the business is
+      profitable, and how much each subscriber is worth, explained in plain words.</p>
+      <div class="ctas"><a class="w" href="#ltv">See subscriber value →</a><a class="o" href="#revenue">Explore revenue</a></div></div>
+      <div class="floats"><div class="f1"><small>Revenue ${y}</small><b>${usdB(a.total_rev_usd_m)}</b><small>${growTxt}</small></div>
+      <div class="f2"><small>${a.op_margin >= 0 ? 'Kept as profit' : 'Lost on operations'}</small><b>${pct(a.op_margin)}</b>
+      <small>of every dollar earned</small></div></div></div>
+    ${section('How it works')}
+    <div class="steps">
+      <div class="card step"><div class="n">1</div><div><h4>Collect official numbers</h4><p>Revenue, users, costs and profit from
+        Spotify's published results for 2021–2025, checked with ${DATA.checks_total} automatic tests.</p></div></div>
+      <div class="card step"><div class="n">2</div><div><h4>Turn them into simple metrics</h4><p>Growth, profit margins, money per
+        subscriber, the cost to win a subscriber and how much each one is worth.</p></div></div>
+      <div class="card step"><div class="n">3</div><div><h4>Test 'what if?'</h4><p>Move the sliders to see what happens if more
+        people cancel, prices change or marketing spend rises.</p></div></div></div>
+    ${section(`Key numbers for ${y}`, 'Pills show the change from the year before. Pick another year with the Year filter at the top.')}
+    <div class="grid">${k('Total revenue', 'total_rev_usd_m', 'b')}${k('Premium subscribers', 'premium_subs_m', 'users')}
+      ${k('Monthly active users', 'mau_m', 'users')}${k('Gross margin', 'gross_margin', 'pct')}
+      ${k('Operating income', 'op_income_usd_m', 'm')}${k('Free cash flow', 'fcf_usd_m', 'm')}</div>
+    <div class="row">${panel('c1')}${panel('c2')}</div>
+    <div class="row">
+      <div class="callout"><b>Growth is monetising.</b>Revenue ${pct(last.total_rev_usd_m / first.total_rev_usd_m - 1, 0)} vs premium
+        subscribers ${pct(last.premium_subs_m / first.premium_subs_m - 1, 0)} (2021–2025).</div>
+      <div class="callout"><b>Profitable at scale.</b>Operating margin ${pct(byYear(A, 2022).op_margin)} (2022) →
+        ${pct(last.op_margin)} (2025); free cash flow ${usdM(last.fcf_usd_m)}.</div>
+      <div class="callout warn"><b>Ads are the gap.</b>Ad revenue ${pct(last.ad_rev_growth)} in 2025; ad money per free user fell
+        to ${usd2(last.ad_rev_per_ad_mau_usd)} a year.</div></div>`;
+  return [html, () => { revenueStack('c1'); marginLines('c2'); }];
+}
+const revenueStack = id => plot(id, [bar(yrs(A), col(A, 'premium_rev_usd_m'), 'Premium', C.green),
+  bar(yrs(A), col(A, 'ad_rev_usd_m'), 'Ads (free users)', C.black)],
+  { titleText: 'Revenue: Premium vs ads ($ millions)', barmode: 'stack', yaxis: { title: '$ millions' } });
+const marginLines = id => plot(id, [line(yrs(A), col(A, 'gross_margin', v => v * 100), 'Gross margin', C.green),
+  line(yrs(A), col(A, 'fcf_margin', v => v * 100), 'Cash margin', C.black),
+  line(yrs(A), col(A, 'op_margin', v => v * 100), 'Operating margin', C.grey)],
+  { titleText: 'Profit margins (% of revenue kept)', yaxis: { ticksuffix: '%' } });
+
+function pageRevenue() {
+  const last = A[A.length - 1];
+  return [explain(`Revenue grew ${pct(last.total_rev_usd_m / A[0].total_rev_usd_m - 1, 0)} from 2021 to 2025. About
+    ${pct(last.premium_mix, 0)} of it comes from Premium subscriptions; the rest comes from ads.`,
+    'Each bar is one year\'s revenue. The green part is Premium, the black part is ads.') + snapshot('revenue') +
+    `<div class="row">${panel('r1')}${panel('r2')}</div><div class="row">${panel('r3', 'Axis is zoomed to show the change.')}${panel('r4')}</div>`,
+  () => {
+    revenueStack('r1');
+    const g = A.filter(r => r.rev_growth != null);
+    plot('r2', [bar(yrs(g), col(g, 'premium_rev_growth', v => v * 100), 'Premium', C.green, '.1f', { texttemplate: '%{y:.1f}%', textposition: 'outside', cliponaxis: false }),
+      bar(yrs(g), col(g, 'ad_rev_growth', v => v * 100), 'Ads (free users)', C.black, '.1f', { texttemplate: '%{y:.1f}%', textposition: 'outside', cliponaxis: false })],
+      { titleText: 'Revenue growth by segment (YoY %)', yaxis: { ticksuffix: '%' } });
+    plot('r3', [line(yrs(A), col(A, 'premium_mix', v => v * 100), 'Premium share', C.green, '.1f', { fill: 'tozeroy', fillcolor: 'rgba(29,185,84,0.10)' })],
+      { titleText: 'Share of revenue from Premium (%)', showlegend: false, yaxis: { range: [85, 92], ticksuffix: '%' } });
+    plot('r4', [bar(Q.map(r => r.period), col(Q, 'premium_rev_usd_m'), 'Premium', C.green),
+      bar(Q.map(r => r.period), col(Q, 'ad_rev_usd_m'), 'Ads (free users)', C.black)],
+      { titleText: 'Revenue each quarter ($ millions)', barmode: 'stack' });
+  }];
+}
+
+function pageSubscribers() {
+  const last = A[A.length - 1];
+  return [explain(`Spotify ended 2025 with ${nf(last.premium_subs_m)} million paying subscribers out of ${nf(last.mau_m)} million
+    monthly users (${pct(last.paying_share, 0)} pay).`, `Lines show users at the end of each year. Bars show how many paying
+    subscribers were added after cancellations.`) + snapshot('subscribers') +
+    `<div class="row">${panel('s1', 'Premium + ad-supported exceeds MAU: users on both tiers within a month are counted in each.')}${panel('s2', 'Net adds = change in year-end subscribers. Gross adds and churn are not disclosed.')}</div>
+     <div class="row">${panel('s3')}${panel('s4')}</div>`,
+  () => {
+    plot('s1', [line(yrs(A), col(A, 'mau_m'), 'Total MAU', C.green, ',.0f'), line(yrs(A), col(A, 'ad_mau_m'), 'Ad-supported MAU', C.black, ',.0f'),
+      line(yrs(A), col(A, 'premium_subs_m'), 'Premium subscribers', C.grey, ',.0f')], { titleText: 'Users at year-end (millions)' });
+    const n = A.filter(r => r.premium_net_adds_m != null);
+    plot('s2', [bar(yrs(n), col(n, 'premium_net_adds_m'), 'Net adds', C.green, '.0f', { texttemplate: '%{y:.0f}M', textposition: 'outside', cliponaxis: false })],
+      { titleText: 'New paying subscribers per year (millions)', showlegend: false });
+    plot('s3', [line(yrs(A), col(A, 'paying_share', v => v * 100), 'Paying share', C.green, '.1f', { fill: 'tozeroy', fillcolor: 'rgba(29,185,84,0.10)' })],
+      { titleText: 'Premium subscribers as % of MAU', showlegend: false, yaxis: { ticksuffix: '%' } });
+    const qn = Q.filter(r => r.premium_net_adds_m != null);
+    plot('s4', [bar(qn.map(r => r.period), col(qn, 'premium_net_adds_m'), 'Net adds', C.green, '.0f', { texttemplate: '%{y:.0f}M', textposition: 'outside', cliponaxis: false })],
+      { titleText: 'New paying subscribers per quarter (millions)', showlegend: false });
+  }];
+}
+
+function pageArpu() {
+  const s = A.filter(r => r.arpu_monthly_usd != null), last = A[A.length - 1];
+  return [explain(`Each paying subscriber brought in about ${usd2(last.arpu_monthly_usd)} a month in 2025, while ad money per free
+    user fell to ${usd2(last.ad_rev_per_ad_mau_usd)} a year.`, 'ARPU = Average Revenue Per User. Higher is better.') +
+    snapshot('arpu') + `<div class="row">${panel('a1', 'Axis starts at $4.')}${panel('a2', 'Ad-supported monetisation fell while the free audience grew.')}</div>
+    <div class="row">${panel('a3', 'Axis starts at $4.')}</div>`,
+  () => {
+    plot('a1', [line(yrs(s), col(s, 'arpu_monthly_usd'), 'ARPU', C.green, '.2f')],
+      { titleText: 'Money from each paying subscriber, per month ($)', showlegend: false, yaxis: { range: [4, 5.6], tickprefix: '$' } });
+    const ad = A.filter(r => r.ad_rev_per_ad_mau_usd != null);
+    plot('a2', [line(yrs(ad), col(ad, 'ad_rev_per_ad_mau_usd'), 'Ad money per free user', C.black, '.2f')],
+      { titleText: 'Ad money earned per free user, per year ($)', showlegend: false, yaxis: { rangemode: 'tozero', tickprefix: '$' } });
+    const q = Q.filter(r => r.arpu_monthly_usd != null);
+    plot('a3', [line(q.map(r => r.period), col(q, 'arpu_monthly_usd'), 'Quarterly ARPU', C.green, '.2f')],
+      { titleText: 'Money per paying subscriber per month, by quarter ($)', showlegend: false, yaxis: { range: [4, 5.6], tickprefix: '$' } });
+  }];
+}
+
+function pageProfitability() {
+  const last = A[A.length - 1];
+  const rows = A.map(r => [r.year, usdM(r.total_rev_usd_m), usdM(r.gross_profit_usd_m), usdM(r.opex_usd_m), usdM(r.op_income_usd_m),
+    usdM(r.fcf_usd_m), pct(r.gross_margin), pct(r.op_margin), pct(r.fcf_margin)]);
+  return [explain(`Spotify kept ${pct(last.op_margin, 0)} of every dollar as operating profit in 2025, up from a loss in 2022.`,
+    'Margins show how many cents of each dollar of revenue are left after costs.') + snapshot('profitability') +
+    `<div class="row">${panel('p1')}${panel('p2')}</div><div class="row">${panel('p3', 'Sales & marketing data is available for 2023–2025 only.')}
+     <div class="panel"><h3>Profit &amp; loss summary ($ millions)</h3>${table(['Year', 'Revenue', 'Gross profit', 'Opex', 'Operating income',
+       'Free cash flow', 'Gross margin', 'Operating margin', 'Cash margin'], rows)}</div></div>`,
+  () => {
+    marginLines('p1');
+    plot('p2', [{ type: 'bar', x: yrs(A), y: col(A, 'op_income_usd_m'), marker: { color: A.map(r => r.op_income_usd_m >= 0 ? C.green : C.black) },
+      text: A.map(r => `${r.op_income_usd_m >= 0 ? 'Profit' : 'Loss'} ${usdM(Math.abs(r.op_income_usd_m))}`), textposition: 'outside',
+      cliponaxis: false, hovertemplate: '$%{y:,.0f}M<extra></extra>' }], { titleText: 'Profit or loss from operations ($ millions)', showlegend: false });
+    plot('p3', [line(yrs(A), col(A, 'opex_ratio', v => v * 100), 'Total operating expenses', C.black),
+      line(yrs(A), col(A, 'sm_pct_rev', v => v * 100), 'Sales & marketing', C.grey)],
+      { titleText: 'Costs as % of revenue (lower is better)', yaxis: { ticksuffix: '%', rangemode: 'tozero' } });
+  }];
+}
+
+function pageCac() {
+  const rows = UE.map(r => [r.year, usd2(r.cac_net_usd), usd2(r.cac_gross_usd), nf(r.payback_net, 1), nf(r.payback_gross, 1), x1(r.ltv_cac_gross)]);
+  const last = UE[UE.length - 1];
+  return [explain(`Spotify spends roughly ${usd2(last.cac_gross_usd)} (realistic estimate) to ${usd2(last.cac_net_usd)} (simple
+    estimate) on marketing for each new subscriber.`, `These are estimates: Spotify does not publish this number. The realistic one is
+    lower because it counts everyone Spotify had to win, including people replacing those who cancelled.`) + snapshot('cac') +
+    `<div class="row">${panel('k1', DATA.disclaimer)}<div class="panel"><h3>CAC proxies and payback at 3% churn</h3>${table(['Year',
+      'CAC, simple ($)', 'CAC, realistic ($)', 'Payback, simple (mo)', 'Payback, realistic (mo)', 'LTV:CAC, realistic'], rows)}</div></div>
+     <div class="row"><div class="callout"><b>Why two CAC proxies?</b>Marketing ÷ net adds treats every new subscriber as growth,
+       which implies zero churn and contradicts the churn used in LTV. The realistic proxy adds back the subscribers the assumed churn
+       rate says must be replaced, so LTV and CAC rest on the same assumption.</div></div>`,
+  () => plot('k1', [bar(yrs(UE), col(UE, 'cac_net_usd'), 'Simple: S&M ÷ net adds', C.green, '.2f', { texttemplate: '$%{y:.2f}', textposition: 'outside', cliponaxis: false }),
+    bar(yrs(UE), col(UE, 'cac_gross_usd'), 'Realistic: S&M ÷ all subscribers won (3% churn)', C.black, '.2f', { texttemplate: '$%{y:.2f}', textposition: 'outside', cliponaxis: false })],
+    { titleText: 'Estimated cost to win one subscriber ($)', legend: { y: -0.22, yanchor: 'top', x: 0, xanchor: 'left' }, margin: { l: 56, r: 20, t: 52, b: 90 } })];
+}
+
+function assumptionSliders(prefix) {
+  return slider(prefix + 'churn', 'Monthly churn', 1, 8, 0.25, state.churn, '%', 'Share of paying subscribers who cancel each month (not published by Spotify).') +
+    slider(prefix + 'arpu', 'ARPU change', -30, 30, 1, state.arpu, '%', 'Raise or cut monthly revenue per subscriber.') +
+    slider(prefix + 'gm', 'Gross margin change', -5, 5, 0.5, state.gm, 'pp', 'Shift the margin left after royalties and delivery.') +
+    slider(prefix + 'sm', 'Marketing spend change', -50, 50, 5, state.sm, '%', 'Raise or cut sales & marketing spend.') +
+    slider(prefix + 'na', 'Net adds change', -50, 50, 5, state.na, '%', 'More or fewer new paying subscribers per year.') +
+    `<div class="ctl"><div class="lab">CAC proxy</div><select class="s" id="${prefix}proxy" style="width:100%">
+       <option value="gross"${state.proxy === 'gross' ? ' selected' : ''}>Realistic: marketing ÷ everyone won</option>
+       <option value="net"${state.proxy === 'net' ? ' selected' : ''}>Simple: marketing ÷ growth only</option></select></div>
+     <div class="ctl"><div class="lab">Base year</div><select class="s" id="${prefix}baseYear" style="width:100%">
+       ${Object.keys(BASE).reverse().map(y => `<option${+y === state.baseYear ? ' selected' : ''}>${y}</option>`).join('')}</select></div>
+     <button class="btn" id="${prefix}reset">↺ Reset to defaults</button>`;
+}
+function ueCards(r) {
+  return `<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))">${card('Value of a subscriber (LTV)', usd2(r.ltv), 'profit over their lifetime')}
+    ${card('Cost to win one (CAC)', usd2(r.cac), state.proxy === 'gross' ? 'realistic proxy' : 'simple proxy')}
+    ${card('LTV:CAC', x1(r.ratio), r.ratio >= 3 ? 'healthy (3x or more)' : 'weak (below 3x)', r.ratio >= 3 ? 'up' : 'down')}
+    ${card('Months to earn back cost', nf(r.payback, 1) + ' mo')}
+    ${card('Average stay', nf(r.stay, 1) + ' mo', r.payback < r.stay ? 'cost earned back in time' : 'cost NOT earned back', r.payback < r.stay ? 'up' : 'down')}</div>`;
+}
+function pageLtv() {
+  const r = ue();
+  return [explain(`At ${nf(state.churn, 2)}% monthly churn a subscriber is worth about ${usd2(r.ltv)} in profit and costs
+    ${usd2(r.cac)} to win, so LTV:CAC is ${x1(r.ratio)}.`, 'Move the sliders on the left; every number and chart updates instantly.') +
+    snapshot('ltv') + `<div class="split"><div class="card controls">${assumptionSliders('a-')}</div><div class="out" id="ltv-out"></div></div>`,
+  () => { bindAssumptions('a-'); renderLtvOut(); }];
+}
+function renderLtvOut() {
+  const r = ue(), el = document.getElementById('ltv-out');
+  if (!el) return;
+  el.innerHTML = ueCards(r) + `<div class="row">${panel('l1', 'Cancellation rates are assumptions; Spotify does not publish them.', 400)}</div>
+    <div class="row">${panel('l2', 'Each bar moves one assumption up or down, holding the others fixed.', 360)}</div>`;
+  const churns = []; for (let c = 1; c <= 8.0001; c += 0.25) churns.push(+c.toFixed(2));
+  const runs = churns.map(c => ue({ ...state, churn: c }));
+  plot('l1', [
+    { type: 'scatter', mode: 'lines', x: churns, y: runs.map(v => v.ltv), name: 'Value of a subscriber (LTV)', line: { width: 3, color: C.green }, hovertemplate: '$%{y:.2f}' },
+    { type: 'scatter', mode: 'lines', x: churns, y: runs.map(v => v.cacNet), name: 'Cost to win (simple)', line: { width: 3, color: C.black }, hovertemplate: '$%{y:.2f}' },
+    { type: 'scatter', mode: 'lines', x: churns, y: runs.map(v => v.cacGross), name: 'Cost to win (realistic)', line: { width: 3, color: C.grey }, hovertemplate: '$%{y:.2f}' }],
+    { titleText: 'LTV vs CAC as churn changes ($ per subscriber)', xaxis: { type: 'linear', ticksuffix: '%', title: 'Monthly churn' },
+      shapes: [{ type: 'line', x0: state.churn, x1: state.churn, yref: 'paper', y0: 0, y1: 1, line: { color: C.ink2, width: 1, dash: 'dot' } }],
+      legend: { y: -0.25, yanchor: 'top', x: 0, xanchor: 'left' }, margin: { l: 56, r: 20, t: 52, b: 100 } });
+  const levers = [['Churn ±1pp', { churn: Math.max(state.churn - 1, 0.5) }, { churn: state.churn + 1 }],
+    ['Gross margin ∓2pp', { gm: state.gm - 2 }, { gm: state.gm + 2 }], ['ARPU ∓10%', { arpu: state.arpu - 10 }, { arpu: state.arpu + 10 }],
+    ['Marketing spend ∓20%', { sm: state.sm - 20 }, { sm: state.sm + 20 }], ['Net adds ∓25%', { na: state.na - 25 }, { na: state.na + 25 }]]
+    .map(([n, lo, hi]) => ({ n, lo: ue({ ...state, ...lo }).ratio, hi: ue({ ...state, ...hi }).ratio }))
+    .sort((p, q) => Math.abs(p.hi - p.lo) - Math.abs(q.hi - q.lo));
+  plot('l2', [
+    { type: 'bar', orientation: 'h', y: levers.map(l => l.n), x: levers.map(l => l.lo - r.ratio), base: r.ratio, name: 'Assumption lowered', marker: { color: C.green }, customdata: levers.map(l => l.lo), hovertemplate: '%{customdata:.2f}x<extra>lowered</extra>' },
+    { type: 'bar', orientation: 'h', y: levers.map(l => l.n), x: levers.map(l => l.hi - r.ratio), base: r.ratio, name: 'Assumption raised', marker: { color: C.black }, customdata: levers.map(l => l.hi), hovertemplate: '%{customdata:.2f}x<extra>raised</extra>' }],
+    { titleText: `Which assumption moves LTV:CAC most? (now ${x1(r.ratio)})`, barmode: 'overlay', hovermode: 'closest',
+      xaxis: { type: 'linear', title: 'LTV:CAC (x)', showgrid: true, gridcolor: '#eeeeea' }, yaxis: { type: 'category' },
+      shapes: [{ type: 'line', x0: r.ratio, x1: r.ratio, yref: 'paper', y0: 0, y1: 1, line: { color: C.ink2, width: 1 } }] });
+}
+
+// heat tables
+const HEAT = [[0, [246, 248, 247]], [0.5, [150, 220, 176]], [1, [24, 160, 72]]];
+function heatColor(t) {
+  t = Math.min(Math.max(t, 0), 1);
+  for (let i = 1; i < HEAT.length; i++) if (t <= HEAT[i][0]) {
+    const [t0, c0] = HEAT[i - 1], [t1, c1] = HEAT[i], f = (t - t0) / (t1 - t0);
+    return `rgb(${c0.map((v, j) => Math.round(v + (c1[j] - v) * f)).join(',')})`;
+  }
+  return `rgb(${HEAT[HEAT.length - 1][1].join(',')})`;
+}
+function heatTable(rowLabels, colLabels, values, fmt, higherBetter = true, selRow = -1, marks = null) {
+  const flat = values.flat().filter(v => Number.isFinite(v)), lo = Math.min(...flat), hi = Math.max(...flat), span = (hi - lo) || 1;
+  const body = rowLabels.map((rl, i) => `<tr class="${i === selRow ? 'sel' : ''}"><td>${rl}</td>${values[i].map((v, j) => {
+    const t = (v - lo) / span, tt = higherBetter ? t : 1 - t;
+    return `<td class="${marks && marks[i][j] ? 'mark' : ''}" style="background:${heatColor(tt)};color:${tt > 0.7 ? '#fff' : '#121212'}"
+      title="${rl} · ${colLabels[j]}">${fmt(v)}</td>`; }).join('')}</tr>`).join('');
+  return `<div class="tablewrap" style="max-height:580px;border:1px solid var(--border);border-radius:10px"><table class="heat"><thead><tr><th style="text-align:left">Monthly churn</th>${colLabels.map(c => `<th>${c}</th>`).join('')}</tr></thead><tbody>${body}</tbody></table></div>
+    <div class="legend">Worse <i style="background:linear-gradient(90deg,${heatColor(0)},${heatColor(.5)},${heatColor(1)})"></i> Better</div>`;
+}
+const GRID_CHURNS = Array.from({ length: 11 }, (_, i) => 1 + i * 0.5);
+
+function pageRetention() {
+  return [explain(`At ${nf(state.churn, 2)}% monthly churn, ${nf(1000 * Math.pow(1 - state.churn / 100, 12))} of 1,000 new subscribers
+    are still paying after a year.`, 'Each row follows 1,000 new subscribers. Read left to right: greener cells = more people still paying.') +
+    snapshot('retention') + `<div class="panel"><div class="toolbar">
+      <select class="s" id="rt-value"><option value="people">People (of 1,000)</option><option value="pct">Percent still paying</option><option value="gp">Profit earned per subscriber $</option></select>
+      <select class="s" id="rt-period"><option value="month">Month</option><option value="quarter">Quarter</option><option value="year">Year</option></select></div>
+      <div id="rt-body"></div><div class="note">Assumes a fixed % cancel every month (row label). The bold row is your selected churn rate.
+      In 'Profit earned', the outlined cell is when profit from one subscriber has paid back the cost of winning them. This is a model:
+      Spotify does not publish this data.</div></div>`,
+  () => {
+    const v = document.getElementById('rt-value'), p = document.getElementById('rt-period');
+    v.value = state.rt.value; p.value = state.rt.period;
+    const draw = () => {
+      state.rt = { value: v.value, period: p.value };
+      const [step, n, pre] = { month: [1, 12, 'M'], quarter: [3, 8, 'Q'], year: [12, 5, 'Y'] }[p.value];
+      const months = Array.from({ length: n }, (_, i) => (i + 1) * step);
+      const marks = [], vals = GRID_CHURNS.map(c => {
+        const r = ue({ ...state, churn: c }), cc = c / 100;
+        const row = months.map(m => v.value === 'people' ? 1000 * Math.pow(1 - cc, m) : v.value === 'pct' ? Math.pow(1 - cc, m) * 100
+          : r.gp * (1 - Math.pow(1 - cc, m)) / cc);
+        const first = v.value === 'gp' ? row.findIndex(x => x >= r.cac) : -1;
+        marks.push(row.map((_, j) => j === first));
+        return row;
+      });
+      const fmt = v.value === 'people' ? x => nf(x) : v.value === 'pct' ? x => nf(x, 0) + '%' : x => '$' + nf(x, 2);
+      const sel = GRID_CHURNS.reduce((b, c, i) => Math.abs(c - state.churn) < Math.abs(GRID_CHURNS[b] - state.churn) ? i : b, 0);
+      document.getElementById('rt-body').innerHTML = heatTable(GRID_CHURNS.map(c => nf(c, 1) + '%'), months.map(m => pre + m / step),
+        vals, fmt, true, sel, v.value === 'gp' ? marks : null);
+    };
+    v.onchange = draw; p.onchange = draw; draw();
+  }];
+}
+
+function pageSensitivity() {
+  return [explain('Use this table to answer "what if?" questions, e.g. what if fewer people cancel AND margins improve?',
+    'Pick what to measure and what to compare. Find your row (churn) and column. Greener = better.') + snapshot('sensitivity') +
+    `<div class="panel"><div class="toolbar">
+      <select class="s" id="sg-metric"><option value="ltv">Value of a subscriber (LTV) $</option><option value="ratioGross">LTV:CAC (realistic)</option>
+        <option value="ratioNet">LTV:CAC (simple)</option><option value="payback">Months to earn back cost</option></select>
+      <select class="s" id="sg-cols"><option value="gm">vs gross margin change</option><option value="arpu">vs price (ARPU) change</option>
+        <option value="sm">vs marketing spend change</option><option value="na">vs new subscribers change</option></select></div>
+      <div id="sg-body"></div><div class="note">Rows: monthly churn. Columns: the second assumption you picked; all other assumptions come
+      from the Model Assumptions page. The bold row is your selected churn.</div></div>`,
+  () => {
+    const m = document.getElementById('sg-metric'), c = document.getElementById('sg-cols');
+    m.value = state.sg.metric; c.value = state.sg.cols;
+    const draw = () => {
+      state.sg = { metric: m.value, cols: c.value };
+      const steps = { gm: [-4, -3, -2, -1, 0, 1, 2, 3, 4], arpu: [-20, -15, -10, -5, 0, 5, 10, 15, 20],
+                      sm: [-40, -30, -20, -10, 0, 10, 20, 30, 40], na: [-40, -30, -20, -10, 0, 10, 20, 30, 40] }[c.value];
+      const unit = c.value === 'gm' ? 'pp' : '%';
+      const vals = GRID_CHURNS.map(ch => steps.map(s => ue({ ...state, churn: ch, [c.value]: s })[m.value]));
+      const fmt = m.value === 'ltv' ? x => '$' + nf(x, 2) : m.value === 'payback' ? x => nf(x, 1) : x => nf(x, 2) + 'x';
+      const sel = GRID_CHURNS.reduce((b, ch, i) => Math.abs(ch - state.churn) < Math.abs(GRID_CHURNS[b] - state.churn) ? i : b, 0);
+      document.getElementById('sg-body').innerHTML = heatTable(GRID_CHURNS.map(ch => nf(ch, 1) + '%'),
+        steps.map(s => (s > 0 ? '+' : '') + s + unit), vals, fmt, m.value !== 'payback', sel);
+    };
+    m.onchange = draw; c.onchange = draw; draw();
+  }];
+}
+
+// Monte Carlo (seeded, so the same settings always give the same answer)
+function mulberry32(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a);
+  t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function tri(u, lo, mode, hi) {
+  if (hi <= lo) return lo;
+  const f = (mode - lo) / (hi - lo);
+  return u < f ? lo + Math.sqrt(u * (hi - lo) * (mode - lo)) : hi - Math.sqrt((1 - u) * (hi - lo) * (hi - mode));
+}
+function simulate() {
+  const m = state.mc, rnd = mulberry32(42), b = BASE[state.baseYear];
+  const lo = Math.min(m.lo, m.hi), hi = Math.max(m.lo, m.hi) > lo ? Math.max(m.lo, m.hi) : lo + 0.01;
+  const cols = { churn: [], arpu: [], gm: [], sm: [], na: [], ratio: [], ltv: [], cac: [], payback: [], stay: [] };
+  for (let i = 0; i < m.runs; i++) {
+    const churn = tri(rnd(), lo, (lo + hi) / 2, hi) / 100;
+    const arpu = b.arpu_usd * (1 + tri(rnd(), -m.arpu, 0, m.arpu) / 100);
+    const gm = b.gross_margin + tri(rnd(), -m.gm, 0, m.gm) / 100;
+    const sm = b.sm_usd_m * (1 + tri(rnd(), -m.sm, 0, m.sm) / 100);
+    const na = b.net_adds_m * (1 + tri(rnd(), -m.na, 0, m.na) / 100);
+    const avg = b.avg_subs_m - b.net_adds_m / 2 + na / 2, gp = arpu * gm, ltv = gp / churn;
+    const cac = state.proxy === 'net' ? sm / na : sm / (na + avg * churn * 12);
+    cols.churn.push(churn * 100); cols.arpu.push(arpu); cols.gm.push(gm * 100); cols.sm.push(sm); cols.na.push(na);
+    cols.ltv.push(ltv); cols.cac.push(cac); cols.ratio.push(ltv / cac); cols.payback.push(cac / gp); cols.stay.push(1 / churn);
+  }
+  return cols;
+}
+const quant = (arr, p) => { const s = [...arr].sort((a, b) => a - b), i = (s.length - 1) * p, f = Math.floor(i);
+  return s[f] + (s[Math.min(f + 1, s.length - 1)] - s[f]) * (i - f); };
+const mean = arr => arr.reduce((a, b) => a + b, 0) / arr.length;
+function ranks(arr) { const idx = arr.map((v, i) => [v, i]).sort((a, b) => a[0] - b[0]), r = new Array(arr.length);
+  idx.forEach(([, i], k) => { r[i] = k; }); return r; }
+function corr(a, b) { const ma = mean(a), mb = mean(b); let n = 0, da = 0, db = 0;
+  for (let i = 0; i < a.length; i++) { n += (a[i] - ma) * (b[i] - mb); da += (a[i] - ma) ** 2; db += (b[i] - mb) ** 2; }
+  return da && db ? n / Math.sqrt(da * db) : 0; }
+
+function pageMontecarlo() {
+  const m = state.mc;
+  return [explain('Instead of betting on one churn rate, this runs thousands of possible futures and counts how often subscribers are still worth more than 3x what they cost to win.',
+    'Set how uncertain each input is on the left. The chart shows every simulated LTV:CAC; the dark line is the 3x "healthy" mark.') +
+    `<div class="split"><div class="card controls"><h3 style="margin:0 0 12px">Uncertainty ranges</h3>
+      ${slider('mc-lo', 'Lowest monthly churn', 1, 8, 0.25, m.lo, '%', 'Spotify does not publish churn, so it is drawn between these two values.')}
+      ${slider('mc-hi', 'Highest monthly churn', 1, 8, 0.25, m.hi, '%')}
+      ${slider('mc-arpu', 'ARPU uncertainty (±)', 0, 30, 1, m.arpu, '%', 'How far price per subscriber could move.')}
+      ${slider('mc-gm', 'Gross margin uncertainty (±)', 0, 5, 0.5, m.gm, 'pp', 'Royalty and delivery costs could shift the margin.')}
+      ${slider('mc-sm', 'Marketing spend uncertainty (±)', 0, 50, 5, m.sm, '%', 'Sales & marketing spend drives CAC.')}
+      ${slider('mc-na', 'Net adds uncertainty (±)', 0, 50, 5, m.na, '%', 'How many more subscribers Spotify wins in a year.')}
+      <div class="ctl"><div class="lab">Number of simulations</div><select class="s" id="mc-runs" style="width:100%">
+        ${[1000, 5000, 10000, 25000, 50000].map(n => `<option value="${n}"${n === m.runs ? ' selected' : ''}>${nf(n)}</option>`).join('')}</select></div>
+      <div class="note" style="padding:0">Uses base year ${state.baseYear} and the ${state.proxy === 'gross' ? 'realistic' : 'simple'} CAC proxy from Model Assumptions.</div>
+      </div><div class="out" id="mc-out"></div></div>`,
+  () => {
+    ['lo', 'hi', 'arpu', 'gm', 'sm', 'na'].forEach(k => {
+      const el = document.getElementById('mc-' + k);
+      el.oninput = () => { document.getElementById('mc-' + k + '-v').textContent = el.value + el.dataset.unit; };
+      el.onchange = () => { state.mc[k] = +el.value; renderMc(); };
+    });
+    document.getElementById('mc-runs').onchange = e => { state.mc.runs = +e.target.value; renderMc(); };
+    renderMc();
+  }];
+}
+function renderMc() {
+  const el = document.getElementById('mc-out'); if (!el) return;
+  const s = simulate(), n = s.ratio.length;
+  const pOk = s.ratio.filter(v => v >= 3).length / n, p10 = quant(s.ratio, .1), p50 = quant(s.ratio, .5), p90 = quant(s.ratio, .9);
+  const payOk = s.payback.filter((v, i) => v < s.stay[i]).length / n;
+  el.innerHTML = `<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))">
+      ${card('Chance LTV:CAC ≥ 3x', pct(pOk, 0), pOk >= .7 ? 'healthy in most futures' : 'risky: often below 3x', pOk >= .7 ? 'up' : 'down')}
+      ${card('Typical LTV:CAC (P50)', x1(p50), `range ${x1(p10)} – ${x1(p90)}`)}
+      ${card('Typical LTV (P50)', usd2(quant(s.ltv, .5)), 'profit per subscriber')}
+      ${card('Typical CAC (P50)', usd2(quant(s.cac, .5)), state.proxy === 'gross' ? 'realistic proxy' : 'simple proxy')}
+      ${card('Cost earned back in time', pct(payOk, 0), 'payback < average stay', payOk >= .7 ? 'up' : 'down')}</div>
+    <div class="row">${panel('m1', 'Each bar counts how many simulated futures landed on that LTV:CAC. Dotted lines mark P10, P50 and P90.', 400)}</div>
+    <div class="row">${panel('m2', 'Longer bar = that input matters more. Positive means a higher input raises LTV:CAC.', 360)}
+      <div class="panel"><h3>Pessimistic / typical / optimistic</h3>${table(['Metric', 'P10 (pessimistic)', 'P50 (typical)', 'P90 (optimistic)', 'Mean'], [
+        ['LTV:CAC', x1(p10), x1(p50), x1(p90), x1(mean(s.ratio))],
+        ['LTV ($)', usd2(quant(s.ltv, .1)), usd2(quant(s.ltv, .5)), usd2(quant(s.ltv, .9)), usd2(mean(s.ltv))],
+        ['CAC ($)', usd2(quant(s.cac, .9)), usd2(quant(s.cac, .5)), usd2(quant(s.cac, .1)), usd2(mean(s.cac))],
+        ['Payback (months)', nf(quant(s.payback, .9), 1), nf(quant(s.payback, .5), 1), nf(quant(s.payback, .1), 1), nf(mean(s.payback), 1)]])}
+      <div class="note">P10 is a bad case (only 10% of runs were worse); P90 a good case. For CAC and payback lower is better, so the pessimistic column shows the high values.</div></div></div>`;
+  const top = quant(s.ratio, .995), nb = 60, w = top / nb, counts = new Array(nb).fill(0);
+  s.ratio.forEach(v => { counts[Math.min(nb - 1, Math.max(0, Math.floor(v / w)))]++; });
+  const mids = counts.map((_, i) => (i + .5) * w), below = mids.map(v => v < 3);
+  plot('m1', [
+    { type: 'bar', x: mids.filter((_, i) => below[i]), y: counts.filter((_, i) => below[i]), width: w * .92, name: 'Below 3x', marker: { color: C.grey }, hovertemplate: '%{x:.2f}x<br>%{y:,} runs<extra></extra>' },
+    { type: 'bar', x: mids.filter((_, i) => !below[i]), y: counts.filter((_, i) => !below[i]), width: w * .92, name: '3x or better', marker: { color: C.green }, hovertemplate: '%{x:.2f}x<br>%{y:,} runs<extra></extra>' }],
+    { titleText: `LTV:CAC across ${nf(n)} simulated futures`, barmode: 'overlay', hovermode: 'closest',
+      xaxis: { type: 'linear', range: [0, top], ticksuffix: 'x', title: 'LTV:CAC (x)' }, yaxis: { title: 'Number of simulations' },
+      legend: { y: -0.2, yanchor: 'top', x: 0, xanchor: 'left' }, margin: { l: 56, r: 20, t: 52, b: 90 },
+      shapes: [{ type: 'line', x0: 3, x1: 3, yref: 'paper', y0: 0, y1: 1, line: { color: C.black, width: 2 } },
+        ...[p10, p50, p90].map(v => ({ type: 'line', x0: v, x1: v, yref: 'paper', y0: 0, y1: 1, line: { color: C.ink2, width: 1, dash: 'dot' } }))],
+      annotations: [{ x: 3, y: 1, yref: 'paper', text: '3x healthy', showarrow: false, xanchor: 'right', yanchor: 'bottom' },
+        ...[[p10, 'P10'], [p50, 'P50'], [p90, 'P90']].map(([v, t]) => ({ x: v, y: 1, yref: 'paper', text: t, showarrow: false, xanchor: 'left', yanchor: 'bottom', font: { size: 11 } }))] });
+  const rr = ranks(s.ratio), names = [['Monthly churn', 'churn'], ['ARPU', 'arpu'], ['Gross margin', 'gm'], ['Marketing spend', 'sm'], ['Net adds', 'na']];
+  const d = names.map(([lab, k]) => [lab, corr(ranks(s[k]), rr)]).sort((p, q) => Math.abs(p[1]) - Math.abs(q[1]));
+  plot('m2', [{ type: 'bar', orientation: 'h', y: d.map(v => v[0]), x: d.map(v => v[1]), marker: { color: d.map(v => v[1] >= 0 ? C.green : C.black) },
+    text: d.map(v => (v[1] >= 0 ? '+' : '') + v[1].toFixed(2)), textposition: 'outside', cliponaxis: false, hovertemplate: '%{y}: %{x:+.2f}<extra></extra>' }],
+    { titleText: 'What drives the risk most?', showlegend: false, hovermode: 'closest',
+      xaxis: { type: 'linear', range: [-1.15, 1.15], title: 'Effect on LTV:CAC (rank correlation)', zeroline: true }, yaxis: { type: 'category' } });
+}
+
+function pageAssumptions() {
+  const r = ue(), b = BASE[state.baseYear];
+  const steps = [['1. Monthly gross profit per subscriber', `ARPU ${usd2(r.arpu)} × gross margin ${pct(r.gm)} = ${usd2(r.gp)}`],
+    ['2. Average stay', `1 ÷ churn ${nf(state.churn, 2)}% = ${nf(r.stay, 1)} months`],
+    ['3. LTV (value of a subscriber)', `${usd2(r.gp)} ÷ ${nf(state.churn, 2)}% = ${usd2(r.ltv)}`],
+    ['4. Subscribers won in the year', state.proxy === 'gross' ? `net adds ${nf(r.netAdds, 1)}M + ${nf(r.avgSubs, 1)}M × ${nf(state.churn, 2)}% × 12 = ${nf(r.netAdds + r.avgSubs * state.churn / 100 * 12, 1)}M` : `net adds ${nf(r.netAdds, 1)}M (simple proxy)`],
+    ['5. CAC (cost to win one)', `marketing ${usdM(r.sm)} ÷ subscribers won = ${usd2(r.cac)}`],
+    ['6. LTV:CAC', `${usd2(r.ltv)} ÷ ${usd2(r.cac)} = ${x1(r.ratio)}`],
+    ['7. Payback', `${usd2(r.cac)} ÷ ${usd2(r.gp)} = ${nf(r.payback, 1)} months`]];
+  const cards = DATA.assumptions.map(a => `<div class="card"><h3 style="margin:0">${esc(a.assumption)}</h3>
+    <p><b>What it is:</b> ${esc(a.what_it_is)}</p><p><b>Default:</b> ${esc(a.default)}</p><p><b>What it changes:</b> ${esc(a.what_it_changes)}</p></div>`).join('');
+  return [explain('Every assumption in one place: change it here, see what it means, and follow the step-by-step maths.',
+    'These settings are shared with the LTV, Retention, Sensitivity and Monte Carlo pages and the sidebar churn slider.') +
+    `<div class="split"><div class="card controls">${assumptionSliders('p-')}</div><div class="out" id="as-out">${ueCards(r)}
+      <div class="panel"><h3>How the results are calculated (base year ${state.baseYear}, US dollars)</h3>${table(['Step', 'Calculation'], steps, 'wrap')}</div></div></div>
+    ${section('What each assumption means')}<div class="assume">${cards}</div>
+    ${section('Base-year inputs', 'Actual Spotify figures, converted to US dollars.')}
+    <div class="panel">${table(['Year', 'Monthly ARPU', 'Gross margin', 'S&M spend', 'Net adds', 'Avg subscribers'],
+      DATA.base_inputs.map(x => [x.year, usd2(x.arpu_usd), pct(x.gross_margin), usdM(x.sm_usd_m), nf(x.net_adds_m, 1) + 'M', nf(x.avg_subs_m, 1) + 'M']))}</div>`,
+  () => bindAssumptions('p-')];
+}
+
+function pageData() {
+  const yRows = state.year === 'all' ? A : A.filter(r => r.year === +state.year);
+  const qRows = state.year === 'all' ? Q : Q.filter(r => r.period.startsWith(state.year));
+  return [explain(`All numbers come from Spotify's official reports. ${DATA.checks_pass} of ${DATA.checks_total} automatic checks passed.`,
+    'Use these tables if you want the exact figures behind the charts. Amounts are converted from euros at each period\'s ECB average rate.') +
+    `<div class="panel"><h3>Annual reported data${state.year === 'all' ? '' : ' for ' + state.year} ($ millions, users in millions)</h3>${table(
+      ['Year', 'Revenue', 'Premium', 'Ads', 'Gross profit', 'Operating income', 'Free cash flow', 'Premium subs', 'MAU', 'Gross margin'],
+      yRows.map(r => [r.year, usdM(r.total_rev_usd_m), usdM(r.premium_rev_usd_m), usdM(r.ad_rev_usd_m), usdM(r.gross_profit_usd_m),
+        usdM(r.op_income_usd_m), usdM(r.fcf_usd_m), nf(r.premium_subs_m) + 'M', nf(r.mau_m) + 'M', pct(r.gross_margin)]))}</div><br>
+    <div class="panel"><h3>Quarterly reported data</h3>${qRows.length ? table(['Quarter', 'Revenue', 'Premium', 'Ads', 'Gross margin', 'Operating margin', 'Net adds', 'ARPU'],
+      qRows.map(r => [r.period, usdM(r.total_rev_usd_m), usdM(r.premium_rev_usd_m), usdM(r.ad_rev_usd_m), pct(r.gross_margin), pct(r.op_margin),
+        r.premium_net_adds_m == null ? 'n/a' : nf(r.premium_net_adds_m) + 'M', usd2(r.arpu_monthly_usd)])) : `<div class="note">Quarterly figures start in Q4 2024, so there are none for ${state.year}.</div>`}</div>
+    <div class="row" style="margin-top:16px"><div class="panel"><h3>Formulas</h3>${table(['Metric', 'Formula'], DATA.formulas.map(f => [esc(f.metric), esc(f.formula)]), 'wrap')}</div>
+      <div class="panel"><h3>Glossary</h3>${table(['Term', 'What it means'], DATA.glossary.map(g => [esc(g.term), esc(g.meaning)]), 'wrap')}</div></div>
+    <div class="row"><div class="callout warn"><b>Limitations.</b>${esc(DATA.disclaimer)} ARPU is approximated, gross margin is company-level, and LTV is undiscounted.</div></div>`,
+  () => {}];
+}
+
+// ------------------------------------------------------------------ shared assumption controls + routing
+function bindAssumptions(prefix) {
+  ['churn', 'arpu', 'gm', 'sm', 'na'].forEach(k => {
+    const el = document.getElementById(prefix + k); if (!el) return;
+    el.oninput = () => { state[k] = +el.value; document.getElementById(prefix + k + '-v').textContent = el.value + el.dataset.unit;
+      updateQuick(); if (state.page === 'ltv') renderLtvOut(); };
+    el.onchange = () => { if (state.page === 'assumptions') render(); };
+  });
+  document.getElementById(prefix + 'proxy').onchange = e => { state.proxy = e.target.value; render(); };
+  document.getElementById(prefix + 'baseYear').onchange = e => { state.baseYear = +e.target.value; render(); };
+  document.getElementById(prefix + 'reset').onclick = () => { Object.assign(state, DEFAULTS); render(); };
+}
+function updateQuick() {
+  const r = ue(), good = r.ratio >= 3;
+  document.getElementById('q-churn').textContent = nf(state.churn, 2) + '%';
+  document.getElementById('side-churn').value = state.churn;
+  document.getElementById('q-out').innerHTML = `<div class="row2"><span>LTV</span><b>${usd2(r.ltv)}</b></div>
+    <div class="row2"><span>LTV:CAC</span><b>${x1(r.ratio)}</b></div>
+    <div class="verdict ${good ? 'good' : 'bad'}">${good ? 'Healthy (3x or more)' : 'Weak (below 3x)'}</div>`;
+}
+const VIEWS = { overview: pageOverview, revenue: pageRevenue, subscribers: pageSubscribers, arpu: pageArpu,
+  profitability: pageProfitability, cac: pageCac, ltv: pageLtv, retention: pageRetention, sensitivity: pageSensitivity,
+  montecarlo: pageMontecarlo, assumptions: pageAssumptions, data: pageData };
+function render() {
+  document.getElementById('title').textContent = PAGES[state.page][1];
+  document.querySelectorAll('#nav a').forEach(a => a.classList.toggle('on', a.dataset.page === state.page));
+  const [html, after] = VIEWS[state.page]();
+  document.getElementById('view').innerHTML = html;
+  after();
+  updateQuick();
+}
+function route() {
+  const p = location.hash.replace('#', '');
+  state.page = PAGES[p] ? p : 'overview';
+  document.getElementById('side').classList.remove('open');
+  render(); window.scrollTo(0, 0);
+}
+document.getElementById('nav').innerHTML = Object.entries(PAGES).map(([k, [label]]) =>
+  `<a href="#${k}" data-page="${k}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICON[k]}</svg>${label}</a>`).join('');
+const yearSel = document.getElementById('year');
+YEARS.slice().reverse().forEach(y => yearSel.insertAdjacentHTML('beforeend', `<option value="${y}">${y}</option>`));
+yearSel.onchange = () => { state.year = yearSel.value; render(); };
+const side = document.getElementById('side-churn');
+side.oninput = () => { state.churn = +side.value; updateQuick(); if (state.page === 'ltv') { const a = document.getElementById('a-churn');
+  if (a) { a.value = state.churn; document.getElementById('a-churn-v').textContent = state.churn + '%'; } renderLtvOut(); } };
+side.onchange = () => { if (['retention', 'sensitivity', 'assumptions', 'montecarlo'].includes(state.page)) render(); };
+document.getElementById('burger').onclick = () => document.getElementById('side').classList.toggle('open');
+document.getElementById('source').textContent = `Source: Spotify Q4 2025 Shareholder Deck & Form 20-F · ${DATA.checks_pass}/${DATA.checks_total} validation checks passed · amounts in US dollars (ECB average rates)`;
+window.addEventListener('hashchange', route);
+route();
+</script>
+</body>
+</html>

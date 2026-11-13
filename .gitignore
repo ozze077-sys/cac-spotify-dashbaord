@@ -6,3 +6,7 @@ venv/
 ~$*.xlsx
 *.pbix.bak
 .DS_Store
+
+# Power BI Desktop local cache (PBIP)
+**/.pbi/localSettings.json
+**/.pbi/cache.abf

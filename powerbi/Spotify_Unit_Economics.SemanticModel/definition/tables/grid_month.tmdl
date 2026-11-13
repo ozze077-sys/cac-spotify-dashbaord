@@ -1,0 +1,23 @@
+table grid_month
+
+	column month
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: month
+
+	column month_label
+		dataType: string
+		sortByColumn: month
+		summarizeBy: none
+		sourceColumn: month_label
+
+	partition grid_month = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "grid_month.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"month", Int64.Type}, {"month_label", type text}}, "en-US")
+				in
+				    Typed

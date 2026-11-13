@@ -1,0 +1,17 @@
+table p_arpu
+
+	column arpu_change
+		dataType: double
+		formatString: +0%;-0%;0%
+		summarizeBy: none
+		sourceColumn: arpu_change
+
+	partition p_arpu = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "p_arpu.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"arpu_change", type number}}, "en-US")
+				in
+				    Typed

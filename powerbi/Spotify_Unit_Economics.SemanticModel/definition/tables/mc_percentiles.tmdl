@@ -1,0 +1,48 @@
+table mc_percentiles
+
+	column metric
+		dataType: string
+		sortByColumn: order
+		summarizeBy: none
+		sourceColumn: metric
+
+	column p10_pessimistic
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: none
+		sourceColumn: p10_pessimistic
+
+	column p50_typical
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: none
+		sourceColumn: p50_typical
+
+	column p90_optimistic
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: none
+		sourceColumn: p90_optimistic
+
+	column mean
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: none
+		sourceColumn: mean
+
+	column order
+		dataType: int64
+		formatString: 0
+		isHidden
+		summarizeBy: none
+		sourceColumn: order
+
+	partition mc_percentiles = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "mc_percentiles.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"metric", type text}, {"p10_pessimistic", type number}, {"p50_typical", type number}, {"p90_optimistic", type number}, {"mean", type number}, {"order", Int64.Type}}, "en-US")
+				in
+				    Typed

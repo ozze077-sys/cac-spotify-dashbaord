@@ -1,0 +1,35 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	discourageImplicitMeasures
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_QueryOrder = ["DataFolder", "year_selector", "fact_annual", "fact_quarterly", "ue_by_year", "base_inputs", "p_churn", "p_arpu", "p_gm", "p_sm", "p_na", "p_proxy", "churn_curve", "grid_churn", "grid_month", "grid_gm", "mc_runs", "mc_drivers", "mc_percentiles", "assumptions", "glossary", "formulas", "_measures"]
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+ref table year_selector
+ref table fact_annual
+ref table fact_quarterly
+ref table ue_by_year
+ref table base_inputs
+ref table p_churn
+ref table p_arpu
+ref table p_gm
+ref table p_sm
+ref table p_na
+ref table p_proxy
+ref table churn_curve
+ref table grid_churn
+ref table grid_month
+ref table grid_gm
+ref table mc_runs
+ref table mc_drivers
+ref table mc_percentiles
+ref table assumptions
+ref table glossary
+ref table formulas
+ref table _measures

@@ -1,0 +1,170 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.0.0/schema.json",
+  "name": "v1104b708a1a0bb4a",
+  "position": {
+    "x": 848,
+    "y": 210,
+    "z": 11000,
+    "width": 616,
+    "height": 380,
+    "tabOrder": 11000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "drillFilterOtherVisuals": true,
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "ue_by_year"
+                    }
+                  },
+                  "Property": "year_label"
+                }
+              },
+              "queryRef": "ue_by_year.year_label",
+              "nativeQueryRef": "year_label"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_measures"
+                    }
+                  },
+                  "Property": "CAC Simple $"
+                }
+              },
+              "queryRef": "_measures.CAC Simple $",
+              "nativeQueryRef": "CAC Simple $"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_measures"
+                    }
+                  },
+                  "Property": "CAC Realistic $"
+                }
+              },
+              "queryRef": "_measures.CAC Realistic $",
+              "nativeQueryRef": "CAC Realistic $"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_measures"
+                    }
+                  },
+                  "Property": "Payback Simple (mo)"
+                }
+              },
+              "queryRef": "_measures.Payback Simple (mo)",
+              "nativeQueryRef": "Payback Simple (mo)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_measures"
+                    }
+                  },
+                  "Property": "Payback Realistic (mo)"
+                }
+              },
+              "queryRef": "_measures.Payback Realistic (mo)",
+              "nativeQueryRef": "Payback Realistic (mo)"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "_measures"
+                    }
+                  },
+                  "Property": "LTV:CAC Realistic"
+                }
+              },
+              "queryRef": "_measures.LTV:CAC Realistic",
+              "nativeQueryRef": "LTV:CAC Realistic"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'CAC proxies and payback at 3% churn'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
+                }
+              }
+            },
+            "bold": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#121212'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

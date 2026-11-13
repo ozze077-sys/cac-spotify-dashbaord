@@ -1,0 +1,16 @@
+term,meaning
+MAU,"Monthly active users: everyone who used Spotify in the month, free or paying."
+Premium subscriber,A person paying for Spotify Premium.
+Ad-supported (free) user,A person using free Spotify; Spotify earns money from ads they hear.
+Revenue,"All the money Spotify earns, before costs."
+US dollars ($),Spotify reports in euros; amounts here are converted to dollars at each year's average ECB exchange rate.
+Gross margin,The % of revenue left after paying music royalties and delivery costs.
+Operating income,"Profit after all running costs (staff, marketing, offices). Negative = loss."
+Free cash flow,Cash the business actually generated in the year after investments.
+ARPU,Average Revenue Per User: money earned from one user per month.
+Churn,"The % of subscribers who cancel each month. Spotify does not publish this, so we assume it."
+CAC,Customer Acquisition Cost: marketing money spent to win one new subscriber (estimated here).
+LTV,Lifetime Value: the profit one subscriber brings in before they cancel.
+LTV ÷ CAC,How many times a subscriber pays back what it cost to win them. 3x or more is usually healthy.
+Payback,Months until a subscriber's profit covers the cost of winning them.
+Simple vs realistic estimate,"Simple divides marketing by growth only. Realistic also counts people won to replace those who cancelled, so it is lower and more believable."

@@ -1,0 +1,84 @@
+table mc_runs
+
+	column run
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: run
+
+	column churn
+		dataType: double
+		formatString: 0.00%
+		summarizeBy: none
+		sourceColumn: churn
+
+	column arpu_usd
+		dataType: double
+		formatString: $#,0.00
+		summarizeBy: none
+		sourceColumn: arpu_usd
+
+	column gross_margin
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: gross_margin
+
+	column sm_usd_m
+		dataType: double
+		formatString: $#,0
+		summarizeBy: none
+		sourceColumn: sm_usd_m
+
+	column net_adds_m
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: none
+		sourceColumn: net_adds_m
+
+	column ltv_usd
+		dataType: double
+		formatString: $#,0.00
+		summarizeBy: none
+		sourceColumn: ltv_usd
+
+	column cac_usd
+		dataType: double
+		formatString: $#,0.00
+		summarizeBy: none
+		sourceColumn: cac_usd
+
+	column ltv_cac
+		dataType: double
+		formatString: 0.00"x"
+		summarizeBy: none
+		sourceColumn: ltv_cac
+
+	column payback_months
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: none
+		sourceColumn: payback_months
+
+	column bin_index
+		dataType: int64
+		formatString: 0
+		isHidden
+		summarizeBy: none
+		sourceColumn: bin_index
+
+	column bin_label
+		dataType: string
+		sortByColumn: bin_index
+		summarizeBy: none
+		sourceColumn: bin_label
+
+	partition mc_runs = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "mc_runs.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"run", Int64.Type}, {"churn", type number}, {"arpu_usd", type number}, {"gross_margin", type number}, {"sm_usd_m", type number}, {"net_adds_m", type number}, {"ltv_usd", type number}, {"cac_usd", type number}, {"ltv_cac", type number}, {"payback_months", type number}, {"bin_index", Int64.Type}, {"bin_label", type text}}, "en-US")
+				in
+				    Typed

@@ -1,0 +1,47 @@
+table base_inputs
+
+	column year
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: year
+
+	column arpu_usd
+		dataType: double
+		formatString: $#,0.00
+		summarizeBy: none
+		sourceColumn: arpu_usd
+
+	column gross_margin
+		dataType: double
+		formatString: 0.0%
+		summarizeBy: none
+		sourceColumn: gross_margin
+
+	column sm_usd_m
+		dataType: double
+		formatString: $#,0
+		summarizeBy: none
+		sourceColumn: sm_usd_m
+
+	column net_adds_m
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: none
+		sourceColumn: net_adds_m
+
+	column avg_subs_m
+		dataType: double
+		formatString: #,0.00
+		summarizeBy: none
+		sourceColumn: avg_subs_m
+
+	partition base_inputs = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "base_inputs.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"year", Int64.Type}, {"arpu_usd", type number}, {"gross_margin", type number}, {"sm_usd_m", type number}, {"net_adds_m", type number}, {"avg_subs_m", type number}}, "en-US")
+				in
+				    Typed

@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "Spotify_Unit_Economics"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "f019928f-bf18-4e84-b570-ff5176b7c7fc"
+  }
+}

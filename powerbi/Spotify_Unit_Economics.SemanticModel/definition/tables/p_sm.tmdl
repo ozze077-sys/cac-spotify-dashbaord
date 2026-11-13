@@ -1,0 +1,17 @@
+table p_sm
+
+	column sm_change
+		dataType: double
+		formatString: +0%;-0%;0%
+		summarizeBy: none
+		sourceColumn: sm_change
+
+	partition p_sm = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "p_sm.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Promoted, {{"sm_change", type number}}, "en-US")
+				in
+				    Typed
